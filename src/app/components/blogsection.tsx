@@ -8,7 +8,7 @@ const blogPosts = [
         description: "Explore modern ideas for design inspiration.",
         date: "12 Oct 2022",
         readTime: "5 min",
-        image: "/blog1.png",
+        image: "/blog1.avif",
     },
     {
         id: 2,
@@ -16,7 +16,7 @@ const blogPosts = [
         description: "Explore modern ideas for design inspiration.",
         date: "12 Oct 2022",
         readTime: "5 min",
-        image: "/blog2.png",
+        image: "/blog2.avif",
     },
     {
         id: 3,
@@ -24,7 +24,7 @@ const blogPosts = [
         description: "Explore modern ideas for design inspiration.",
         date: "12 Oct 2022",
         readTime: "5 min",
-        image: "/blog3.png",
+        image: "/blog3.avif",
     },
 ];
 
@@ -33,9 +33,9 @@ const Blogsection = () => {
 
     return (
         <section className="py-16 bg-white text-center">
-            <div className="container mx-auto px-6 lg:px-8">
+            <div className="container mx-auto px-medium lg:px-large">
                 {/* Title Section */}
-                <h2 className="text-3xl font-bold text-center mb-2">Our Blogs</h2>
+                <h2 className="text-3xl lg:text-4xl font-bold text-center mb-2">Our Blogs</h2>
                 <p className="text-gray-600 text-center mb-8">
                     Find a bright idea to suit your taste with our great selection
                 </p>
@@ -55,7 +55,7 @@ const Blogsection = () => {
                                 className="w-full h-auto"
                             />
                             <div className="p-6">
-                                <h3 className="font-semibold text-lg mb-2">{blog.title}</h3>
+                                <h3 className="font-semibold text-lg mb-2 line-clamp-2">{blog.title}</h3>
                                 {/* <p className="text-gray-600 mb-4">{blog.description}</p> */}
                                 <div className="flex items-center justify-center text-gray-500 text-sm">
                                     <span className="flex items-center">
@@ -98,7 +98,7 @@ const Blogsection = () => {
 
                 {/* View All Posts Button */}
                 <div className="text-center mt-8">
-                    <Link className="py-2 border-b border-black transition-colors" href="/blogs">
+                    <Link className="py-2 border-b border-black transition-colors" href="/">
                         View All Posts
                     </Link>
                 </div>

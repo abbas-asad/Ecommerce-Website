@@ -4,12 +4,12 @@ import Heroheader from "../components/heroheader"
 
 export default function Account() {
   return (
-  <main>
+    <main>
 
-    <Heroheader sectionName="My account" />
-    <Authpage />
-    <Featuressection />
-  </main>
+      <Heroheader sectionName="My account" />
+      <Authpage />
+      <Featuressection />
+    </main>
   )
 }
 

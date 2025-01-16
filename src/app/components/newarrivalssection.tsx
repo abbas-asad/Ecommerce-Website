@@ -3,7 +3,7 @@ import Image from "next/image"
 const Newarrivalssection = () => {
     return (
         <section className="py-16 bg-[#FFF9E5]">
-            <div className="container mx-auto px-6 lg:px-12">
+            <div className="container mx-auto px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row items-center">
                     {/* Image Section */}
                     <div className="lg:w-1/2 mb-8 lg:mb-0">
@@ -17,7 +17,7 @@ const Newarrivalssection = () => {
                     </div>
 
                     {/* Content Section */}
-                    <div className="lg:w-1/2 lg:pl-12 flex items-center flex-col text-center lg:text-left">
+                    <div className="lg:w-1/2 flex items-center flex-col text-center">
                         <span className="text-sm font-medium text-gray-500 uppercase mb-2">
                             New Arrivals
                         </span>

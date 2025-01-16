@@ -1,26 +1,75 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
 
-const Productdetails = () => {
+interface IProduct {
+    id: number;
+    title: string;
+    description: string;
+    category: string;
+    price: number;
+    discountPercentage?: number;
+    rating?: number;
+    stock: number;
+    tags?: string[]; // Optional array of tags
+    brand: string;
+    sku: string;
+    weight?: number;
+    dimensions?: {
+        width?: number;
+        height?: number;
+        depth?: number;
+    }; // Optional dimensions
+    warrantyInformation?: string;
+    shippingInformation?: string;
+    availabilityStatus: string;
+    reviews?: {
+        rating: number;
+        comment: string;
+        date: string;
+        reviewerName: string;
+        reviewerEmail: string;
+    }[]; // Optional array of reviews
+    returnPolicy?: string;
+    minimumOrderQuantity?: number;
+    meta?: {
+        createdAt?: string;
+        updatedAt?: string;
+        barcode?: string;
+        qrCode?: string;
+    }; // Optional meta information
+    images: string[];
+    thumbnail: string;
+}
+
+const Product = async ({ params }: { params: { id: string } }) => {
+    // Fetch product data server-side
+    const response = await fetch(`https://dummyjson.com/products/${params.id}`);
+    const data: IProduct = await response.json();
+
+    // Handle the case where the product doesn't exist
+    // if (!data) {
+    //     return <div>Product not found.</div>;
+    // }
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <nav className="flex items-center space-x-2 text-sm mb-8">
+        <section className="container mx-auto px-medium lg:px-large py-8">
+            <div className="flex items-center space-x-2 text-sm mb-8">
                 <Link href="/" className="text-gray-500 hover:text-gray-700">Home</Link>
                 <span className="text-gray-500">/</span>
                 <Link href="/shop" className="text-gray-500 hover:text-gray-700">Shop</Link>
                 <span className="text-gray-500">/</span>
-                <span className="text-gray-900">Asgaard sofa</span>
-            </nav>
+                <span className="text-gray-900">{data.title}</span>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-8">
                 <div className="flex gap-4">
                     <div className="flex flex-col gap-4">
-                        {[1, 2, 3, 4].map((i) => (
+                        {[0, 1, 2].map((i) => (
                             <button key={i} className="w-20 h-20 border rounded-lg overflow-hidden bg-[#fff9ef]">
                                 <Image
-                                    src="/minisofa.png"
-                                    alt={`Asgaard sofa thumbnail ${i}`}
+                                    src={data.images[i]}
+                                    alt={`${data.title}`}
                                     width={80}
                                     height={80}
                                     className="object-contain w-full h-full bg-center"
@@ -30,8 +79,8 @@ const Productdetails = () => {
                     </div>
                     <div className="flex-1 bg-[#fff9ef] flex items-center">
                         <Image
-                            src="/asgsofa.png"
-                            alt="Asgaard sofa main image"
+                            src={data.thumbnail}
+                            alt={`${data.title}`}
                             width={500}
                             height={500}
                             className="w-full h-auto rounded-lg"
@@ -40,8 +89,8 @@ const Productdetails = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <h1 className="text-4xl font-semibold">Asgaard sofa</h1>
-                    <p className="text-2xl text-gray-600">Rs. 250,000.00</p>
+                    <h1 className="text-4xl font-semibold">{data.title}</h1>
+                    <p className="text-2xl text-gray-600">${data.price}</p>
 
                     <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((i) => (
@@ -52,15 +101,10 @@ const Productdetails = () => {
                         <span className="text-gray-600 ml-2">5 Customer Review</span>
                     </div>
 
-                    <p className="text-gray-600">
-                        Setting the bar as one of the loudest speakers in its class, the Kilburn is a
-                        compact, stout-hearted hero with a well-balanced audio which boasts a clear
-                        midrange and extended highs for a sound that is both articulate and pronounced.
-                        The analogue knobs allow you to fine tune the controls to your personal preferences
-                        while the guitar-influenced leather strap enables easy and stylish travel.
-                    </p>
+                    <p className="text-gray-600">{data.description}</p>
 
                     <div className="space-y-4">
+                        <p className="text-gray-500">Stock: {data.stock}</p>
                         <div className="flex items-center gap-4">
                             <span className="text-gray-600">Size</span>
                             <div className="flex gap-2">
@@ -102,9 +146,9 @@ const Productdetails = () => {
                     </div>
 
                     <div className="space-y-2 pt-6 border-t">
-                        <p><span className="text-gray-600">SKU:</span> SS001</p>
-                        <p><span className="text-gray-600">Category:</span> Sofas</p>
-                        <p><span className="text-gray-600">Tags:</span> Sofa, Chair, Home, Shop</p>
+                        <p><span className="text-gray-600">SKU:</span> {data.sku}</p>
+                        <p><span className="text-gray-600">Category:</span> {data.category}</p>
+                        <p><span className="text-gray-600">Tags:</span> {data.tags?.join(', ')}</p>
                         <div className="flex gap-4 items-center">
                             <span className="text-gray-600">Share:</span>
                             <div className="flex gap-4">
@@ -128,10 +172,10 @@ const Productdetails = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     )
 }
 
-export default Productdetails
+export default Product
 
 

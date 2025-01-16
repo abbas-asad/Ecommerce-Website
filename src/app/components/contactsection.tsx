@@ -12,10 +12,10 @@ const formFields = [
 
 export default function Contactsection() {
     return (
-        <div className="container mx-auto px-4 md:px-20 py-16">
+        <div className="container mx-auto px-medium lg:px-large py-16">
             {/* Header Section */}
             <div className="text-center mb-16">
-                <h1 className="text-4xl font-bold mb-4">Get In Touch With Us</h1>
+                <h1 className="text-[1.8rem] font-bold mb-4">Get In Touch With Us</h1>
                 <p className="text-gray-600 max-w-2xl mx-auto">
                     For More Information About Our Product & Services. Please Feel Free To Drop Us
                     An Email. Our Staff Always Be There To Help You Out. Do Not Hesitate!
@@ -23,7 +23,7 @@ export default function Contactsection() {
             </div>
 
             {/* Contact Section */}
-            <div className="grid md:grid-cols-2 gap-16 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-16 ">
                 {/* Contact Information */}
                 <div className="space-y-8">
                     <div className="flex gap-4">

@@ -1,10 +1,9 @@
-'use client'
-
+"use client"
 import { useState } from 'react'
 import Link from 'next/link'
-import { User, Search, ShoppingCart, Menu, ChevronDown } from 'lucide-react'
+import { User, ShoppingCart, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+// import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,18 +12,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+// import {
+//   Sheet,
+//   SheetContent,
+//   SheetHeader,
+//   SheetTitle,
+//   SheetTrigger,
+// } from '@/components/ui/sheet'
 
 const navItems = [
   { name: 'Home', href: '/' },
   { name: 'Shop', href: '/shop' },
-  { name: 'About', href: '/about' },
+  { name: 'Account', href: '/account' },
   { name: 'Contact', href: '/contact' },
 ]
 
@@ -34,7 +33,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white py-4 shadow-sm sticky top-0 z-30">
-      <div className="container mx-auto px-6 lg:px-8">
+      <div className="container mx-auto px-medium lg:px-large">
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <Link
@@ -61,7 +60,7 @@ export default function Navbar() {
           {/* Action Icons */}
           <div className="flex items-center gap-2">
             {/* Search */}
-            <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+            {/* <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
@@ -85,7 +84,7 @@ export default function Navbar() {
                   </form>
                 </div>
               </SheetContent>
-            </Sheet>
+            </Sheet> */}
 
             {/* Account Dropdown */}
             <DropdownMenu>

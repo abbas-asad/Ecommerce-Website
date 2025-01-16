@@ -9,7 +9,7 @@ import {
 
 const Dropdownmenu = () => {
     return (
-        <div className="bg-[#FAF4F4] flex flex-wrap sm:flex-nowrap flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b py-4 mx-auto px-4 sm:px-10">
+        <div className="bg-[#FAF4F4] flex flex-wrap sm:flex-nowrap flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 border-b py-4 mx-auto px-medium lg:px-large">
             {/* Left Section */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
                 {/* Filter Button - Hidden on Mobile */}

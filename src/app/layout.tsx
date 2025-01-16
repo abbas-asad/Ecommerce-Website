@@ -1,7 +1,19 @@
-import "./globals.css";
 import type { Metadata } from "next";
+import { Inter, Poppins } from "next/font/google";
+import "./globals.css";
 import Footer from "./components/footer";
 import Navbar from "./components/navbar";
+
+const inter = Inter({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+const poppins = Poppins({
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Luxemart",
@@ -15,13 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="min-h-screen bg-white antialiased" style={{ fontFamily: "Poppins, sans-serif" }}>
+      <body className={`${poppins.className} antialiased min-h-screen bg-white`}>
         <Navbar />
         {children}
         <Footer />

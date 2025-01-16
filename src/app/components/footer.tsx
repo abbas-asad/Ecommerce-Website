@@ -17,7 +17,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gray-50 text-gray-800 border-t">
-      <div className="container mx-auto px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-medium lg:px-large py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Address Section */}
         <div className="space-y-4">
           <h4 className="font-semibold text-sm text-[#9F9F9F]">Address</h4>

@@ -17,7 +17,7 @@ const features = [
 const Featuressection = () => {
   return (
     <div className="bg-[#FAF4F4]">
-      <div className="container mx-auto px-6 lg:px-8 py-10 lg:py-14">
+      <div className="container mx-auto px-medium lg:px-large py-10 lg:py-14">
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <div

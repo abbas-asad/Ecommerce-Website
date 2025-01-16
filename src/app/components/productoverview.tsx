@@ -50,8 +50,8 @@ export default function Productoverview() {
                     <button
                         key={tab.id}
                         className={`px-6 py-2 hidden md:block text-lg font-medium ${activeTab === tab.id
-                                ? "text-black border-b-2 border-black"
-                                : "text-gray-500"
+                            ? "text-black border-b-2 border-black"
+                            : "text-gray-500"
                             }`}
                         onClick={() => setActiveTab(tab.id)}
                     >

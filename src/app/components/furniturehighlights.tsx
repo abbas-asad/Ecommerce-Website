@@ -2,22 +2,22 @@ import Image from 'next/image'
 
 const sideTables = [
     {
-        src: "/sidetable1.png",
-        alt: "Side table 1",
-        title: "Side Table 1",
+        src: "/sidetable.png",
+        alt: "Side table",
+        title: "Side Table",
     },
     {
-        src: "/sidetable2.png",
-        alt: "Side table 2",
-        title: "Side Table 2",
+        src: "/officesofa.png",
+        alt: "Office Sofa",
+        title: "Office Sofa",
     },
 ];
 
-const Sidetablesection = () => {
+const Furniturehighlights = () => {
 
     return (
-        <section className="lg:py-16 py-10 bg-[#FAF4F4]">
-            <div className="container mx-auto px-4 flex justify-center items-center">
+        <section className="py-10 lg:py-16 bg-[#FAF4F4]">
+            <div className="container mx-auto px-medium lg:px-large flex md:justify-center items-center">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-64 gap-y-6">
                     {sideTables.map((table, index) => (
                         <div key={index}>
@@ -38,4 +38,4 @@ const Sidetablesection = () => {
     )
 }
 
-export default Sidetablesection
+export default Furniturehighlights

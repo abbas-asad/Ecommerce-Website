@@ -5,8 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 export default function Authpage() {
   return (
-    <div className="container mx-auto px-4 md:px-20 py-16">
-      <div className="grid md:grid-cols-2 gap-16 max-w-6xl mx-auto">
+    <div className="container mx-auto px-medium lg:px-large py-16">
+      <div className="grid md:grid-cols-2 gap-16 ">
         {/* Login Form */}
         <div>
           <h2 className="text-2xl font-bold mb-8">Log In</h2>
@@ -54,8 +54,8 @@ export default function Authpage() {
               A link to set a new password will be sent to your email address.
             </p>
             <p className="text-sm text-gray-600">
-              Your personal data will be used to support your experience 
-              throughout this website, to manage access to your account, 
+              Your personal data will be used to support your experience
+              throughout this website, to manage access to your account,
               and for other purposes described in our{' '}
               <Link href="#" className="text-black hover:underline">
                 privacy policy

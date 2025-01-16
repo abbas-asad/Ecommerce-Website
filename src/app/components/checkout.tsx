@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-
+// padding check problem remains
 export default function Checkout() {
   return (
-    <div className="container mx-auto px-4 md:px-20 py-8">
+    <div className="container mx-auto px-medium lg:px-large py-8">
       <div className="grid lg:grid-cols-2 gap-16">
         {/* Billing Details Form */}
         <div>
@@ -83,8 +83,8 @@ export default function Checkout() {
 
             <div className="space-y-2">
               <Label htmlFor="additionalInfo">Additional information</Label>
-              <Textarea 
-                id="additionalInfo" 
+              <Textarea
+                id="additionalInfo"
                 placeholder="Additional information"
                 className="min-h-[100px]"
               />
@@ -99,15 +99,15 @@ export default function Checkout() {
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-600">Asgaard sofa × 1</span>
-                <span>Rs. 250,000.00</span>
+                <span>$2500</span>
               </div>
               <div className="flex justify-between border-t pt-4">
                 <span className="text-gray-600">Subtotal</span>
-                <span>Rs. 250,000.00</span>
+                <span>$2500</span>
               </div>
               <div className="flex justify-between border-t pt-4">
                 <span className="font-semibold">Total</span>
-                <span className="text-[#B88E2F] font-semibold">Rs. 250,000.00</span>
+                <span className="text-[#B88E2F] font-semibold">$2500</span>
               </div>
 
               <RadioGroup defaultValue="bank-transfer" className="mt-6">
@@ -126,9 +126,9 @@ export default function Checkout() {
                 </div>
               </RadioGroup>
 
-              <div className="text-sm text-gray-600 mt-6">
+              <div className="text-sm text-gray-600 mt-6 ml-6">
                 Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our{" "}
-                <Link href="/privacy-policy" className="text-black hover:underline">
+                <Link href="/#" className="text-black hover:underline">
                   privacy policy
                 </Link>
                 .

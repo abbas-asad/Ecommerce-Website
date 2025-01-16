@@ -1,14 +1,17 @@
+import Image from "next/image";
 import Featuressection from "../components/featuressection";
 
 export default function BlogPage() {
-    return (
-      <>
+  return (
+    <>
       <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-12 lg:w-3/4">
           {/* First Post */}
           <article>
-            <img
+            <Image
+              height={'400'}
+              width={'400'}
               src="/blog1.png"
               alt="Laptop on wooden desk"
               className="w-full mb-4"
@@ -32,10 +35,12 @@ export default function BlogPage() {
             </p>
             <a href="#" className="text-gray-600 hover:text-gray-900">Read more</a>
           </article>
-  
+
           {/* Second Post */}
           <article>
-            <img
+            <Image
+              height={'400'}
+              width={'400'}
               src="/blog2.png"
               alt="Writing in notebook"
               className="w-full mb-4"
@@ -59,10 +64,12 @@ export default function BlogPage() {
             </p>
             <a href="#" className="text-gray-600 hover:text-gray-900">Read more</a>
           </article>
-  
+
           {/* Third Post */}
           <article>
-            <img
+            <Image
+              height={'400'}
+              width={'400'}
               src="/blog3.png"
               alt="Coffee and notebook"
               className="w-full mb-4"
@@ -86,7 +93,7 @@ export default function BlogPage() {
             </p>
             <a href="#" className="text-gray-600 hover:text-gray-900">Read more</a>
           </article>
-  
+
           {/* Pagination */}
           <div className="flex justify-center gap-2 pt-8">
             <a href="#" className="px-3 py-1 bg-gray-100 text-gray-800">1</a>
@@ -95,7 +102,7 @@ export default function BlogPage() {
             <a href="#" className="px-3 py-1 hover:bg-gray-100 text-gray-800">Next</a>
           </div>
         </div>
-  
+
         {/* Sidebar */}
         <div className="space-y-8">
           {/* Search */}
@@ -111,7 +118,7 @@ export default function BlogPage() {
               </svg>
             </button>
           </div>
-  
+
           {/* Categories */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Categories</h3>
@@ -138,13 +145,15 @@ export default function BlogPage() {
               </li>
             </ul>
           </div>
-  
+
           {/* Recent Posts */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
             <div className="space-y-4">
               <a href="#" className="flex gap-4 group">
-                <img
+                <Image
+                  height={'400'}
+                  width={'400'}
                   src="/blog2.png"
                   alt="Going all-in with millennial design"
                   className="w-16 h-16 object-cover"
@@ -155,7 +164,9 @@ export default function BlogPage() {
                 </div>
               </a>
               <a href="#" className="flex gap-4 group">
-                <img
+                <Image
+                  height={'400'}
+                  width={'400'}
                   src="/blog2.png"
                   alt="Exploring new ways of decorating"
                   className="w-16 h-16 object-cover"
@@ -166,7 +177,9 @@ export default function BlogPage() {
                 </div>
               </a>
               <a href="#" className="flex gap-4 group">
-                <img
+                <Image
+                  height={'400'}
+                  width={'400'}
                   src="/blog2.png"
                   alt="Modern home in Milan"
                   className="w-16 h-16 object-cover"
@@ -177,7 +190,9 @@ export default function BlogPage() {
                 </div>
               </a>
               <a href="#" className="flex gap-4 group">
-                <img
+                <Image
+                  height={'400'}
+                  width={'400'}
                   src="/blog2.png"
                   alt="Colorful office redesign"
                   className="w-16 h-16 object-cover"
@@ -192,11 +207,11 @@ export default function BlogPage() {
         </div>
       </div>
       <Featuressection />
-      </>
+    </>
 
-    )
-  }
-  
-  
+  )
+}
 
-  // I will fix it for mobile
+
+
+// I will fix it for mobile

@@ -11,10 +11,10 @@ const Hero = () => {
 
                     {/* Content Section */}
                     <div className="lg:w-1/2 flex justify-center items-center text-center lg:items-start flex-col  lg:text-left">
-                        <h2 className="text-4xl lg:text-5xl font-extrabold text-gray-800 mb-6 leading-tight">
+                        <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-800 mb-6 leading-tight">
                             Rocket single seater
                         </h2>
-                        <span className="text-lg font-medium text-gray-500  mb-6">
+                        <span className="text-lg lg:text-xl font-medium text-gray-500  mb-6">
                             Experience comfort and style with our Rocket Single Seater. Perfect for any living room.
                         </span>
 
@@ -30,7 +30,7 @@ const Hero = () => {
                     </div>
 
                     {/* Image Section */}
-                    <div className="lg:w-1/2 mb-8 lg:mb-0">
+                    <div className="lg:w-1/2 my-14 md:my-5">
                         <Image
                             src="/herosecsofa.png"
                             alt="Asgaard sofa"

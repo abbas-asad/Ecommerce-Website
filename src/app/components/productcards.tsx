@@ -2,51 +2,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { client } from "@/sanity/lib/client";
+import { Product as IProduct } from "../studio/sanity.types"
 
 interface headingNameProp {
     headingName: string;
     para?: string;
     limit?: number;
-}
-
-interface IProduct {
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    price: number;
-    discountPercentage?: number;
-    rating?: number;
-    stock: number;
-    tags?: string[];
-    brand: string;
-    sku: string;
-    weight?: number;
-    dimensions?: {
-        width?: number;
-        height?: number;
-        depth?: number;
-    };
-    warrantyInformation?: string;
-    shippingInformation?: string;
-    availabilityStatus: string;
-    reviews?: {
-        rating: number;
-        comment: string;
-        date: string;
-        reviewerName: string;
-        reviewerEmail: string;
-    }[];
-    returnPolicy?: string;
-    minimumOrderQuantity?: number;
-    meta?: {
-        createdAt?: string;
-        updatedAt?: string;
-        barcode?: string;
-        qrCode?: string;
-    };
-    images: string[];
-    thumbnail: string;
 }
 
 export default function Productcards(props: headingNameProp) {
@@ -55,9 +17,10 @@ export default function Productcards(props: headingNameProp) {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const response = await fetch("https://dummyjson.com/products/category/furniture");
-            const data = await response.json();
-            setProductData(data.products);
+
+            const query = `*[_type == "product"]{_id, title, price, "thumbnail": thumbnail.asset->url, rating, slug}`;
+            const data = await client.fetch(query);
+            setProductData(data);
             setIsLoading(false); // Data has finished loading
         };
 
@@ -82,8 +45,8 @@ export default function Productcards(props: headingNameProp) {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-16 gap-y-24">
                         {displayedProducts.map((product: IProduct) => (
-                            <div key={product.id} className="space-y-3">
-                                <Link href={`/products/${product.id}`}>
+                            <div key={product._id} className="space-y-3">
+                                <Link href={`/products/${product.slug.current}`}>
                                     <div className="cursor-pointer space-y-3">
                                         <div className="aspect-square relative overflow-hidden space-y-3">
                                             <Image
@@ -96,11 +59,9 @@ export default function Productcards(props: headingNameProp) {
                                         </div>
                                         <h3 className="font-medium text-base line-clamp-1">{product.title}</h3>
                                         <p className="font-semibold text-base">${product.price.toFixed(2)}</p>
-                                        {/* <p className="font-semibold text-base text-gray-500">Stock: {product.stock}</p> */}
-                                        {/* <p className="text-sm text-green-500">
-                                            Discount: {product.discountPercentage}%
-                                        </p> */}
-                                        <p className="font-semibold text-base text-[#B88E2F]">Rating: {product.rating?.toFixed(1)}</p>
+                                        <p className="font-semibold text-base text-[#B88E2F]">
+                                            Rating: {product.rating?.toFixed(1) || "N/A"}
+                                        </p>
                                     </div>
                                 </Link>
                             </div>

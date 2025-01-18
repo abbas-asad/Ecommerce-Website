@@ -2,7 +2,7 @@ import Product from '@/app/components/product';
 import Productcards from '@/app/components/productcards';
 import React from 'react'
 
-const Productdetails = async ({ params }: { params: { id: string } }) => {
+const Productdetails = async ({ params }: { params: { slug: string } }) => {
     const productElement = await Product({ params });
     return (
         <main>
@@ -13,5 +13,4 @@ const Productdetails = async ({ params }: { params: { id: string } }) => {
 }
 
 export default Productdetails
-
 

@@ -3,6 +3,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { User, ShoppingCart, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+// import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+
 // import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
@@ -115,6 +117,16 @@ export default function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {/* <ClerkProvider>
+
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+
+            </ClerkProvider> */}
 
             {/* Cart Dropdown */}
             <DropdownMenu>

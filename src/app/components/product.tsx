@@ -1,56 +1,31 @@
+import { client } from '@/sanity/lib/client'; // Importing the Sanity client
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import { Product as IProduct } from "../studio/sanity.types"
 
-interface IProduct {
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    price: number;
-    discountPercentage?: number;
-    rating?: number;
-    stock: number;
-    tags?: string[]; // Optional array of tags
-    brand: string;
-    sku: string;
-    weight?: number;
-    dimensions?: {
-        width?: number;
-        height?: number;
-        depth?: number;
-    }; // Optional dimensions
-    warrantyInformation?: string;
-    shippingInformation?: string;
-    availabilityStatus: string;
-    reviews?: {
-        rating: number;
-        comment: string;
-        date: string;
-        reviewerName: string;
-        reviewerEmail: string;
-    }[]; // Optional array of reviews
-    returnPolicy?: string;
-    minimumOrderQuantity?: number;
-    meta?: {
-        createdAt?: string;
-        updatedAt?: string;
-        barcode?: string;
-        qrCode?: string;
-    }; // Optional meta information
-    images: string[];
-    thumbnail: string;
-}
+export default async function ProductPage({ params }: { params: { slug: string } }) {
+    const { slug } = params;
 
-const Product = async ({ params }: { params: { id: string } }) => {
-    // Fetch product data server-side
-    const response = await fetch(`https://dummyjson.com/products/${params.id}`);
-    const data: IProduct = await response.json();
+    const query = `*[_type == "product" && slug.current == $slug][0]{
+        _id,
+        title,
+        price,
+        "thumbnail": thumbnail.asset->url,
+        rating,
+        slug,
+        stock,
+        sku,
+        "category": category->title,
+        tags,
+         "images": images[].asset->url,
+        description
+    }`;
 
-    // Handle the case where the product doesn't exist
-    // if (!data) {
-    //     return <div>Product not found.</div>;
-    // }
+    const product:IProduct = await client.fetch(query, { slug });
+
+    if (!product) {
+        return <div>Product not found</div>; // Show a fallback message if product is not found
+    }
 
     return (
         <section className="container mx-auto px-medium lg:px-large py-8">
@@ -59,7 +34,7 @@ const Product = async ({ params }: { params: { id: string } }) => {
                 <span className="text-gray-500">/</span>
                 <Link href="/shop" className="text-gray-500 hover:text-gray-700">Shop</Link>
                 <span className="text-gray-500">/</span>
-                <span className="text-gray-900">{data.title}</span>
+                <span className="text-gray-900">{product.title}</span>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -68,8 +43,8 @@ const Product = async ({ params }: { params: { id: string } }) => {
                         {[0, 1, 2].map((i) => (
                             <button key={i} className="w-20 h-20 border rounded-lg overflow-hidden bg-[#fff9ef]">
                                 <Image
-                                    src={data.images[i]}
-                                    alt={`${data.title}`}
+                                    src={product.images[i]}
+                                    alt={`${product.title}`}
                                     width={80}
                                     height={80}
                                     className="object-contain w-full h-full bg-center"
@@ -79,8 +54,8 @@ const Product = async ({ params }: { params: { id: string } }) => {
                     </div>
                     <div className="flex-1 bg-[#fff9ef] flex items-center">
                         <Image
-                            src={data.thumbnail}
-                            alt={`${data.title}`}
+                            src={product.thumbnail}
+                            alt={`${product.title}`}
                             width={500}
                             height={500}
                             className="w-full h-auto rounded-lg"
@@ -89,8 +64,8 @@ const Product = async ({ params }: { params: { id: string } }) => {
                 </div>
 
                 <div className="space-y-6">
-                    <h1 className="text-4xl font-semibold">{data.title}</h1>
-                    <p className="text-2xl text-gray-600">${data.price}</p>
+                    <h1 className="text-4xl font-semibold">{product.title}</h1>
+                    <p className="text-2xl text-gray-600">${product.price}</p>
 
                     <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((i) => (
@@ -101,10 +76,10 @@ const Product = async ({ params }: { params: { id: string } }) => {
                         <span className="text-gray-600 ml-2">5 Customer Review</span>
                     </div>
 
-                    <p className="text-gray-600">{data.description}</p>
+                    <p className="text-gray-600">{product.description}</p>
 
                     <div className="space-y-4">
-                        <p className="text-gray-500">Stock: {data.stock}</p>
+                        <p className="text-gray-600">Stock: {product.stock}</p>
                         <div className="flex items-center gap-4">
                             <span className="text-gray-600">Size</span>
                             <div className="flex gap-2">
@@ -146,9 +121,9 @@ const Product = async ({ params }: { params: { id: string } }) => {
                     </div>
 
                     <div className="space-y-2 pt-6 border-t">
-                        <p><span className="text-gray-600">SKU:</span> {data.sku}</p>
-                        <p><span className="text-gray-600">Category:</span> {data.category}</p>
-                        <p><span className="text-gray-600">Tags:</span> {data.tags?.join(', ')}</p>
+                        <p><span className="text-gray-600">SKU:</span> {product.sku}</p>
+                        <p><span className="text-gray-600">Category:</span> {product.category}</p>
+                        <p><span className="text-gray-600">Tags:</span> {product.tags?.join(', ')}</p>
                         <div className="flex gap-4 items-center">
                             <span className="text-gray-600">Share:</span>
                             <div className="flex gap-4">
@@ -173,9 +148,5 @@ const Product = async ({ params }: { params: { id: string } }) => {
                 </div>
             </div>
         </section>
-    )
+    );
 }
-
-export default Product
-
-

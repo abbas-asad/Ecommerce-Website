@@ -1,0 +1,30 @@
+migration steps   1000 products       aik jga se data utha kr dusri dfa daalna
+
+file aik afa chale gi migration.mjs
+
+
+3 dafa data
+
+react toastify
+
+out of stock
+
+template 8
+
+tags ky andar featured likha ho to wo feature may show hoga
+
+gallery tag
+
+Instagram tag
+
+
+
+cukay data insert kr ry hain is liye token chahiye
+
+gpt ko schema de kr groq query generate krwa do
+
+
+
+
+
+webhooks stripe se sanity may order laey ga

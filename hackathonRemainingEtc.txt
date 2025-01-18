@@ -1,0 +1,63 @@
+components/layout practice jo har page pr same rhen
+ksi bhi chez ka short name us ka alias hai
+@/ ap src kay andar ho wo direct src sy start lyga
+space x
+functionality shadcn sheet wali aur components aap ky apne
+next js fonts
+dev aur build sath nhi
+
+
+build 3 kam
+1 error find krta hai
+2 optimize krta hai
+
+
+.next sirf deploy krna hoga
+
+
+https://youtu.be/X_8vfrLIKFE?si=Rn6NyMMvedWGp5hh&t=6838
+
+
+
+
+Ecom T-Stack:
+
+
+Nextjs
+Typescript
+ShadCN
+Clerk
+Use Shopping Cart
+Stripe
+ShipEngine
+Sanity
+
+
+
+
+Removed:
+
+
+1 Dropdown from shop
+2 Blogs Page
+
+
+
+
+
+
+
+
+Improvements Can:
+Nav maay search
+Shopping Cart Improvement
+404 not found
+Cart popup like design
+Hero Header aur insta ki images waghera better ho skti hain
+Cart component instead page
+Blog Page with components
+
+
+product.tsx fix
+
+produtccard.tsx fix and schema type typ gen check

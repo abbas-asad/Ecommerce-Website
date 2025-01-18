@@ -11,7 +11,6 @@
     "clearsanitydata": "node scripts/clearsanitydata.mjs"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.9.12",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "^2.1.4",

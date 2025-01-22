@@ -1,15 +1,17 @@
+import { CartProvider } from '@/context/cart-context'
+import { Toaster } from 'sonner'
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Cabin } from "next/font/google";
 import "./globals.css";
-import Footer from "./components/footer";
-import Navbar from "./components/navbar";
+import Footer from "./components/layout/footer";
+import Navbar from "./components/layout/navbar";
 
 const inter = Inter({
   weight: ["400", "600", "700"],
   subsets: ["latin"],
   display: "swap",
 });
-const poppins = Poppins({
+const cabin = Cabin({
   weight: ["400", "600", "700"],
   // weight: ["400"],
   subsets: ["latin"],
@@ -28,10 +30,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} antialiased min-h-screen bg-white`}>
-        <Navbar />
-        {children}
-        <Footer />
+      <body className={`${cabin.className} antialiased min-h-screen bg-white`}>
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Toaster position="top-right" />
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

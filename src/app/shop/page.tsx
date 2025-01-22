@@ -1,6 +1,6 @@
-import Heroheader from "../components/heroheader"
+import Heroheader from "../components/layout/heroheader"
 // import Dropdownmenu from '../components/dropdownmenu'
-import Featuressection from "../components/featuressection"
+import Featuressection from "../components/layout/featuressection"
 import Productcards from "../components/productcards"
 
 export default function ShopPage() {

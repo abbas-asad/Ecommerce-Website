@@ -1,6 +1,6 @@
 import Checkout from "../components/checkout"
-import Featuressection from "../components/featuressection"
-import Heroheader from "../components/heroheader"
+import Featuressection from "../components/layout/featuressection"
+import Heroheader from "../components/layout/heroheader"
 
 export default function Account() {
   return (

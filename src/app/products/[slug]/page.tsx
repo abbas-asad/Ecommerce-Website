@@ -1,16 +1,15 @@
 import Product from '@/app/components/product';
 import Productcards from '@/app/components/productcards';
-import React from 'react'
+import React from 'react';
 
-const Productdetails = async ({ params }: { params: { slug: string } }) => {
-    const productElement = await Product({ params });
+const Productdetails = ({ params }: { params: { slug: string } }) => {
     return (
         <main>
-            {productElement}
+            {/* Pass the params as props to the Product component */}
+            <Product params={params} />
             <Productcards headingName="Related Products" limit={4} />
         </main>
-    )
-}
+    );
+};
 
-export default Productdetails
-
+export default Productdetails;

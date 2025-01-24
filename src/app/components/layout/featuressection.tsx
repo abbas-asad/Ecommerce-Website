@@ -1,7 +1,7 @@
 const features = [
   {
     title: "Fast & Free Shipping",
-    description: "Enjoy free shipping on all orders over $75 with quick delivery to your doorstep.",
+    description: "Enjoy free shipping on all orders over Rs.7500 with quick delivery to your doorstep.",
   },
   {
     title: "Hassle-Free Returns",

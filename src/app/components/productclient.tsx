@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { toast } from 'sonner';
+import ecommerceConfig from '../../../ecommerce.config';
 
 export default function ProductClient({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1);
@@ -69,7 +70,7 @@ export default function ProductClient({ product }: { product: any }) {
 
                 <div className="space-y-6">
                     <h1 className="text-4xl font-semibold">{product.title}</h1>
-                    <p className="text-2xl text-gray-600">${product.price}</p>
+                    <p className="text-2xl text-gray-600">{ecommerceConfig.currency.prefix}{product.price}</p>
 
                     {/* Rating section remains the same */}
                     <div className="flex items-center gap-1">

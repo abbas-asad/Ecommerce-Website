@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Trash2, Plus, Minus } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import Featuressection from "../components/layout/featuressection"
+import ecommerceConfig from "../../../ecommerce.config"
 
 export default function CartPage() {
   const { items: cartItems, updateQuantity, removeItem } = useCart()
@@ -69,7 +70,7 @@ export default function CartPage() {
                   </div>
                   <div className="text-gray-500 text-sm md:text-base">
                     <span className="md:hidden font-medium mr-2">Price:</span>
-                    ${item.price.toFixed(2)}
+                    {ecommerceConfig.currency.prefix}{item.price.toFixed(2)}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="md:hidden font-medium mr-2">Quantity:</span>
@@ -88,7 +89,7 @@ export default function CartPage() {
                     </button>
                   </div>
                   <div className="text-gray-500 text-sm md:text-base">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {ecommerceConfig.currency.prefix}{(item.price * item.quantity).toFixed(2)}
                   </div>
                   <div>
                     <button
@@ -110,15 +111,15 @@ export default function CartPage() {
               <div className="space-y-4">
                 <div className="flex justify-between pb-4 border-b">
                   <span>Subtotal</span>
-                  <span className="text-gray-600">${subtotal.toFixed(2)}</span>
+                  <span className="text-gray-600">{ecommerceConfig.currency.prefix}{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pb-4 border-b">
                   <span>Tax (10%)</span>
-                  <span className="text-gray-600">${tax.toFixed(2)}</span>
+                  <span className="text-gray-600">{ecommerceConfig.currency.prefix}{tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pb-4">
                   <span className="font-medium">Total</span>
-                  <span className="text-[#B88E2F] font-medium text-xl">${total.toFixed(2)}</span>
+                  <span className="text-[#B88E2F] font-medium text-xl">{ecommerceConfig.currency.prefix}{total.toFixed(2)}</span>
                 </div>
                 <Link href="/checkout" className="block">
                   <Button className="w-full bg-[#000000] hover:bg-gray-800 text-white">

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { User, ShoppingCart, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import siteConfig from '../../../../site.config'
 // import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 // import { Input } from '@/components/ui/input'
@@ -42,7 +43,7 @@ export default function Navbar() {
             href="/"
             className="text-xl font-semibold text-gray-900"
           >
-            Luxemart
+            {siteConfig.name}
           </Link>
 
           {/* Desktop Navigation */}

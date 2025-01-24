@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { client } from "@/sanity/lib/client";
 import { Product as IProduct } from "../studio/sanity.types"
+import ecommerceConfig from "../../../ecommerce.config";
 
 interface headingNameProp {
     headingName: string;
@@ -58,7 +59,7 @@ export default function Productcards(props: headingNameProp) {
                                             />
                                         </div>
                                         <h3 className="font-medium text-base line-clamp-1">{product.title}</h3>
-                                        <p className="font-semibold text-base">${product.price.toFixed(2)}</p>
+                                        <p className="font-semibold text-base">{ecommerceConfig.currency.prefix}{product.price.toFixed(2)}</p>
                                         <p className="font-semibold text-base text-[#B88E2F]">
                                             Rating: {product.rating?.toFixed(1) || "N/A"}
                                         </p>

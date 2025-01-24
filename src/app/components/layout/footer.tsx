@@ -1,4 +1,5 @@
 import Link from "next/link";
+import siteConfig from "../../../../site.config";
 
 const Footer = () => {
   const shopLinks = [
@@ -25,8 +26,8 @@ const Footer = () => {
             400 University Drive Suite 200 Coral <br />
             Gables, <br /> FL 33134 USA
           </address>
-          <p className="text-sm text-[#9F9F9F]">luxemart@gmail.com</p>
-          <p className="text-sm text-[#9F9F9F]">+1-305-555-1234</p>
+          <p className="text-sm text-[#9F9F9F]">{siteConfig.contact.email}</p>
+          <p className="text-sm text-[#9F9F9F]">{siteConfig.contact.phone}</p>
         </div>
 
         {/* Shop Links */}
@@ -83,7 +84,7 @@ const Footer = () => {
       {/* Footer Bottom */}
       <hr className="border-gray-200" />
       <div className="py-6 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} Luxemart. All rights reserved.
+        &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
       </div>
     </footer>
   );

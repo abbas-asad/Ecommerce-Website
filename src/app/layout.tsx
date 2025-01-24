@@ -5,6 +5,7 @@ import { Inter, Cabin } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/layout/footer";
 import Navbar from "./components/layout/navbar";
+import siteConfig from '../../site.config';
 
 const inter = Inter({
   weight: ["400", "600", "700"],
@@ -19,8 +20,8 @@ const cabin = Cabin({
 });
 
 export const metadata: Metadata = {
-  title: "Luxemart",
-  description: "Ecommerce Website",
+  title: `${siteConfig.seo.defaultTitle}`,
+  description: `${siteConfig.seo.defaultDescription}`,
 };
 
 export default function RootLayout({

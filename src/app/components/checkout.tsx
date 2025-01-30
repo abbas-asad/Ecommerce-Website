@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, FormEvent } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -11,77 +14,91 @@ import Link from "next/link"
 import { useCart } from '@/context/cart-context'
 import Image from "next/image"
 import ecommerceConfig from "../../../ecommerce.config"
-import { createClient } from '@sanity/client'
+import { client } from '@/sanity/lib/client'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { v4 as uuidv4 } from 'uuid'
 
-// Sanity client configuration
-const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  useCdn: false,
-  apiVersion: '2023-05-03',
-  token: process.env.SANITY_WRITE_TOKEN
+// Zod validation schema
+const formSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  address: z.string().min(1, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  additionalInfo: z.string().optional(),
+  paymentMethod: z.enum(['bank-transfer', 'cash'])
 })
+
+type FormValues = z.infer<typeof formSchema>
 
 export default function Checkout() {
   const { items: cartItems, clearCart } = useCart()
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    address: '',
-    city: 'Karachi',
-    additionalInfo: '',
-    paymentMethod: 'cash'
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      city: 'Karachi',
+      paymentMethod: 'cash'
+    }
   })
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const tax = subtotal * 0.1
   const total = subtotal + tax
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }))
-  }
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    const orderDocument = {
-      _type: 'order',
-      customer: {
-        _type: 'customer',
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city
-      },
-      items: cartItems.map(item => ({
-        productId: item.id,
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price
-      })),
-      paymentMethod: formData.paymentMethod,
-      additionalInfo: formData.additionalInfo,
-      totals: {
-        subtotal,
-        tax,
-        total
-      },
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    }
-
+  const onSubmit = async (data: FormValues) => {
     try {
-      await sanityClient.create(orderDocument)
+      setIsSubmitting(true)
+      const userId = localStorage.getItem('userId') || uuidv4()
+      const orderId = uuidv4()
+
+      const orderDocument = {
+        _type: 'order',
+        orderId,
+        userId,
+        customer: {
+          _type: 'customer',
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phone: data.phone,
+          address: data.address,
+          city: data.city
+        },
+        items: cartItems.map(item => ({
+          _key: uuidv4(),
+          product: { _ref: item.id, _type: 'reference' },
+          quantity: item.quantity,
+          price: item.price,
+          size: item.size,
+          color: item.color
+        })),
+        paymentMethod: data.paymentMethod,
+        additionalInfo: data.additionalInfo,
+        totals: {
+          subtotal,
+          tax,
+          total
+        },
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      }
+
+      await client.create(orderDocument)
       clearCart()
-      // TODO: Add order confirmation page/redirect
+      toast.success('Order placed successfully!')
+      router.push(`/order-confirmation/${orderId}`)
     } catch (error) {
       console.error('Order submission failed:', error)
+      toast.error('Failed to place order. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -101,7 +118,7 @@ export default function Checkout() {
 
   return (
     <div className="container mx-auto px-medium lg:px-large py-8">
-      <form onSubmit={handleSubmit} className="grid lg:grid-cols-2 gap-16">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid lg:grid-cols-2 gap-16">
         {/* Billing Details Form */}
         <div>
           <h2 className="text-2xl font-bold mb-6">Billing details</h2>
@@ -109,89 +126,136 @@ export default function Checkout() {
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  required
-                  value={formData.firstName}
-                  onChange={handleInputChange}
+                <Controller
+                  name="firstName"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="firstName"
+                      error={errors.firstName?.message}
+                    />
+                  )}
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm">{errors.firstName.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  required
-                  value={formData.lastName}
-                  onChange={handleInputChange}
+                <Controller
+                  name="lastName"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="lastName"
+                      error={errors.lastName?.message}
+                    />
+                  )}
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm">{errors.lastName.message}</p>
+                )}
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={handleInputChange}
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="phone"
+                    type="tel"
+                    error={errors.phone?.message}
+                  />
+                )}
               />
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                required
-                value={formData.address}
-                onChange={handleInputChange}
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="address"
+                    error={errors.address?.message}
+                  />
+                )}
               />
+              {errors.address && (
+                <p className="text-red-500 text-sm">{errors.address.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="city">City</Label>
-              <Select
-                // id="city"
-                value={formData.city}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select city" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Karachi">Karachi</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="city"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select city" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Karachi">Karachi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.city && (
+                <p className="text-red-500 text-sm">{errors.city.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="additionalInfo">Additional information</Label>
-              <Textarea
-                id="additionalInfo"
-                placeholder="Additional information"
-                value={formData.additionalInfo}
-                onChange={handleInputChange}
-                className="min-h-[100px]"
+              <Controller
+                name="additionalInfo"
+                control={control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    id="additionalInfo"
+                    className="min-h-[100px]"
+                  />
+                )}
               />
             </div>
 
-            <RadioGroup
-              value={formData.paymentMethod}
-              onValueChange={(value) => setFormData(prev => ({
-                ...prev,
-                paymentMethod: value
-              }))}
-              className="mt-6"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="bank-transfer" id="bank-transfer" />
-                <Label htmlFor="bank-transfer" className="font-medium">Direct Bank Transfer</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="cash" id="cash" />
-                <Label htmlFor="cash" className="font-medium">Cash On Delivery</Label>
-              </div>
-            </RadioGroup>
+            <Controller
+              name="paymentMethod"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="mt-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="bank-transfer" id="bank-transfer" />
+                    <Label htmlFor="bank-transfer" className="font-medium">Direct Bank Transfer</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="cash" id="cash" />
+                    <Label htmlFor="cash" className="font-medium">Cash On Delivery</Label>
+                  </div>
+                </RadioGroup>
+              )}
+            />
           </div>
         </div>
 

@@ -7,13 +7,63 @@ import { Trash2, Plus, Minus } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import Featuressection from "../components/layout/featuressection"
 import ecommerceConfig from "../../../ecommerce.config"
+import { client } from '@/sanity/lib/client'
+import { useState } from 'react'
 
 export default function CartPage() {
   const { items: cartItems, updateQuantity, removeItem } = useCart()
 
+  // Calculate totals (keep your existing logic)
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const tax = subtotal * 0.1 // 10% tax
+  const tax = subtotal * 0.1
   const total = subtotal + tax
+
+  // Add subtle loading state (preserves UI)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Enhanced quantity update with Sanity sync
+  const handleQuantityChange = async (id: string, newQuantity: number) => {
+    try {
+      setIsLoading(true)
+      updateQuantity(id, newQuantity)
+
+      // Optional: Immediate Sanity sync
+      const userId = localStorage.getItem('userId')
+      if (userId) {
+        await client.patch({
+          query: `*[_type == "cart" && userID == $userId && product._ref == $productId][0]`,
+          params: { userId, productId: id },
+          set: { quantity: newQuantity }
+        })
+      }
+    } catch (error) {
+      console.error('Quantity update failed:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Enhanced remove item with Sanity sync
+  const handleRemoveItem = async (id: string) => {
+    try {
+      setIsLoading(true)
+      removeItem(id)
+
+      // Optional: Immediate Sanity cleanup
+      const userId = localStorage.getItem('userId')
+      if (userId) {
+        await client.delete({
+          query: `*[_type == "cart" && userID == $userId && product._ref == $productId]`,
+          params: { userId, productId: id }
+        })
+      }
+    } catch (error) {
+      console.error('Item removal failed:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
 
   if (cartItems.length === 0) {
     return (
@@ -75,14 +125,16 @@ export default function CartPage() {
                   <div className="flex items-center gap-2">
                     <span className="md:hidden font-medium mr-2">Quantity:</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                      disabled={isLoading}
                       className="bg-[#FFF9E5] p-2 rounded-lg hover:bg-[#FFF0CC]"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-8 text-center">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                      disabled={isLoading}
                       className="bg-[#FFF9E5] p-2 rounded-lg hover:bg-[#FFF0CC]"
                     >
                       <Plus className="w-4 h-4" />
@@ -93,9 +145,9 @@ export default function CartPage() {
                   </div>
                   <div>
                     <button
-                      onClick={() => removeItem(item.id)}
-                      className="bg-[#FFF9E5] p-2 rounded-lg hover:bg-[#FFF0CC] transition-colors"
-                      aria-label="Remove item"
+                      onClick={() => handleRemoveItem(item.id)}
+                      disabled={isLoading}
+                      className="bg-[#FFF9E5] p-2 rounded-lg hover:bg-[#FFF0CC]"
                     >
                       <Trash2 className="w-4 h-4 text-gray-500" />
                     </button>

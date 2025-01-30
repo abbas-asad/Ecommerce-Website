@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { toast } from 'sonner';
 import ecommerceConfig from '../../../ecommerce.config';
+import { client } from '@/sanity/lib/client';
+import { getOrCreateUserId } from '@/lib/user';
 
 export default function ProductClient({ product }: { product: any }) {
     const [quantity, setQuantity] = useState(1);
@@ -17,17 +19,31 @@ export default function ProductClient({ product }: { product: any }) {
         setQuantity(prev => Math.max(1, prev + delta));
     };
 
-    const handleAddToCart = () => {
-        addItem({
-            id: product._id,
-            name: product.title,
-            price: product.price,
-            quantity: quantity,
-            image: product.thumbnail,
-            size: selectedSize,
-            color: selectedColor,
-        });
-        toast.success('Added to cart');
+    const handleAddToCart = async () => {
+        try {
+            const userId = getOrCreateUserId(); // Get user ID
+            addItem({
+                id: product._id,
+                name: product.title,
+                price: product.price,
+                quantity: quantity,
+                image: product.thumbnail,
+                size: selectedSize,
+                color: selectedColor,
+            });
+            await client.create({
+                _type: 'cart', // Create this schema in Sanity first!
+                userID: userId,
+                product: { _ref: product._id, _type: 'reference' },
+                quantity,
+                size: selectedSize,
+                color: selectedColor,
+            });
+            toast.success('Added to cart');
+        } catch (error) {
+            toast.error('Failed to add to cart. Please try again.');
+            console.error('Sanity cart creation error:', error);
+        }
     };
 
     return (
@@ -122,7 +138,7 @@ export default function ProductClient({ product }: { product: any }) {
 
                         <div className="flex gap-4 items-center">
                             <div className="flex border rounded-lg">
-                                <button 
+                                <button
                                     className="px-4 py-2 border-r hover:bg-gray-100"
                                     onClick={() => handleQuantityChange(-1)}
                                 >
@@ -134,14 +150,14 @@ export default function ProductClient({ product }: { product: any }) {
                                     className="w-16 text-center"
                                     readOnly
                                 />
-                                <button 
+                                <button
                                     className="px-4 py-2 border-l hover:bg-gray-100"
                                     onClick={() => handleQuantityChange(1)}
                                 >
                                     +
                                 </button>
                             </div>
-                            <button 
+                            <button
                                 className="px-8 py-3 bg-[#B88E2F] text-white rounded-lg hover:bg-[#A47E2A] transition-colors"
                                 onClick={handleAddToCart}
                             >

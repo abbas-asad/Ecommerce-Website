@@ -11,6 +11,7 @@
     "clearsanitydata": "node scripts/clearsanitydata.mjs"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "^2.1.4",
@@ -28,12 +29,14 @@
     "next-sanity": "^9.8.37",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.54.2",
     "react-is": "^19.0.0",
     "sanity": "^3.70.0",
     "sonner": "^1.7.2",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^20",

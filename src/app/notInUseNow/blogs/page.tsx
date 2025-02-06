@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Featuressection from "../components/layout/featuressection";
+import Featuressection from "../../components/layout/featuressection";
 
 export default function BlogPage() {
   return (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import siteConfig from "../../../../site.config";
+import siteConfig from "@site.config";
 
 const Footer = () => {
   const shopLinks = [

@@ -1,5 +1,0 @@
-Cart context
-User context
-Cart page
-Checkout
-Order Confirmation

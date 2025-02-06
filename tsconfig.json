@@ -20,7 +20,9 @@
     ],
     "paths": {
       "@/*": ["./src/*"],             // General alias for everything in `src/`
-      "@/components/*": ["./src/components/*"] // Specific alias for components
+      "@/components/*": ["./src/components/*"], // Specific alias for components
+      "@ecommerce.config": ["./ecommerce.config"],
+      "@site.config": ["./site.config"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

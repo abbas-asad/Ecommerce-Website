@@ -1,10 +1,11 @@
-// schemas/product.ts
+import { PackageCheck } from 'lucide-react'
 import { defineType, defineField } from 'sanity'
 
-export const productSchema = defineType({
+export const productsSchema = defineType({
     name: 'product',
-    title: 'Product',
+    title: 'Products',
     type: 'document',
+    icon: PackageCheck,
     fields: [
         defineField({
             name: 'title',

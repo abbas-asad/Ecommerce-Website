@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { toast } from 'sonner';
-import ecommerceConfig from '../../../ecommerce.config';
+import ecommerceConfig from "@ecommerce.config"
 import { client } from '@/sanity/lib/client';
 import { getOrCreateUserId } from '@/lib/user';
 
@@ -35,7 +35,7 @@ export default function ProductClient({ product }: { product: any }) {
                 _type: 'cart', // Create this schema in Sanity first!
                 userID: userId,
                 product: { _ref: product._id, _type: 'reference' },
-                quantity,
+                quantity: quantity,
                 size: selectedSize,
                 color: selectedColor,
             });

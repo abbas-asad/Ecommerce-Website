@@ -13,22 +13,70 @@ import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
 import { useCart } from '@/context/cart-context'
 import Image from "next/image"
-import ecommerceConfig from "../../../ecommerce.config"
+import ecommerceConfig from "@ecommerce.config"
 import { client } from '@/sanity/lib/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { v4 as uuidv4 } from 'uuid'
+import Emptycartmessage from './emptycartmsg'
 
 // Zod validation schema
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phone: z
+    .string()
+    .regex(/^(03\d{9}|\+92\d{10})$/, "Invalid phone number"),
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "City is required"),
   additionalInfo: z.string().optional(),
   paymentMethod: z.enum(['bank-transfer', 'cash'])
 })
+
+// const formSchema = z.object({
+//   firstName: z
+//     .string()
+//     .trim()
+//     .min(1, { message: "First name is required" })
+//     .max(50, { message: "First name must be at most 50 characters" }),
+
+//   lastName: z
+//     .string()
+//     .trim()
+//     .min(1, { message: "Last name is required" })
+//     .max(50, { message: "Last name must be at most 50 characters" }),
+
+//   phone: z
+//     .string()
+//     .trim()
+//     .regex(/^(03\d{9}|\+92\d{10})$/, { message: "Enter a valid Pakistani phone number (e.g., 03001234567 or +923001234567)" }),
+
+//   address: z
+//     .string()
+//     .trim()
+//     .min(5, { message: "Address must be at least 5 characters long" })
+//     .max(100, { message: "Address must be at most 100 characters" }),
+
+//   city: z
+//     .string()
+//     .trim()
+//     .min(1, { message: "City is required" })
+//     .max(50, { message: "City must be at most 50 characters" }),
+
+//   additionalInfo: z
+//     .string()
+//     .trim()
+//     .max(200, { message: "Additional information must be at most 200 characters" })
+//     .optional(),
+
+//   paymentMethod: z.enum(["bank-transfer", "cash"], {
+//     message: "Invalid payment method",
+//   }),
+// });
+
+
+//  If I want advanced validation
+
 
 type FormValues = z.infer<typeof formSchema>
 
@@ -93,7 +141,7 @@ export default function Checkout() {
       await client.create(orderDocument)
       clearCart()
       toast.success('Order placed successfully!')
-      router.push(`/order-confirmation/${orderId}`)
+      router.push(`/orders/${userId}`)
     } catch (error) {
       console.error('Order submission failed:', error)
       toast.error('Failed to place order. Please try again.')
@@ -104,15 +152,7 @@ export default function Checkout() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="container mx-auto px-medium lg:px-large py-[30vh] text-center">
-        <h1 className="text-2xl font-bold mb-6">Checkout</h1>
-        <p className="text-gray-500 mb-4">Your cart is empty</p>
-        <Link href="/shop">
-          <Button className="bg-[#B88E2F] hover:bg-[#A47E2A] text-white">
-            Continue Shopping
-          </Button>
-        </Link>
-      </div>
+      <Emptycartmessage headingName="Checkout" />
     )
   }
 
@@ -133,7 +173,6 @@ export default function Checkout() {
                     <Input
                       {...field}
                       id="firstName"
-                      error={errors.firstName?.message}
                     />
                   )}
                 />
@@ -150,7 +189,6 @@ export default function Checkout() {
                     <Input
                       {...field}
                       id="lastName"
-                      error={errors.lastName?.message}
                     />
                   )}
                 />
@@ -170,7 +208,6 @@ export default function Checkout() {
                     {...field}
                     id="phone"
                     type="tel"
-                    error={errors.phone?.message}
                   />
                 )}
               />
@@ -188,7 +225,6 @@ export default function Checkout() {
                   <Input
                     {...field}
                     id="address"
-                    error={errors.address?.message}
                   />
                 )}
               />
@@ -245,10 +281,10 @@ export default function Checkout() {
                   onValueChange={field.onChange}
                   className="mt-6"
                 >
-                  <div className="flex items-center space-x-2">
+                  {/* <div className="flex items-center space-x-2">
                     <RadioGroupItem value="bank-transfer" id="bank-transfer" />
                     <Label htmlFor="bank-transfer" className="font-medium">Direct Bank Transfer</Label>
-                  </div>
+                  </div> */}
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="cash" id="cash" />
                     <Label htmlFor="cash" className="font-medium">Cash On Delivery</Label>

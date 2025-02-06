@@ -1,0 +1,27 @@
+                                                             ``Main kaam bs cart aur us se related cheez hai``
+
+
+Cart context
+User context
+Cart page
+Checkout
+Order Confirmation
+
+prodcut cards aur empty dono dono may rop heading name hai is ko baad may sahi krna hai
+
+1.sirf 2 errors cart when reload etc
+2.orders but not all orders with user id  (acha agar mujhe specific order pr dynamic route chahiye ho to us ka code v0 kay paas hai)
+
+3.aur checkout validation
+
+4.sirf 3 cheezain for search (search/page productcard comp updated navbar)
+
+5.except search and orders all pages are in components
+
+6.main product.tsx ko thora sa dekhna hai kyun kay wo aik kay shayad do component hain (wesay to wo sahi hai)  
+
+7.local storage not defined navbar 40 line error
+
+8.review ka error kay latest uper aur data sahi trha sahi na ky cart ki trha
+
+checkout may say wo error wla option khatm aur input component/ui/input bhi pehle ki trha krdia hai

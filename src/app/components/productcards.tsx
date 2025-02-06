@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { client } from "@/sanity/lib/client";
 import { Product as IProduct } from "../studio/sanity.types"
-import ecommerceConfig from "../../../ecommerce.config";
+import ecommerceConfig from "@ecommerce.config"
 
 interface headingNameProp {
     headingName: string;

@@ -5,7 +5,7 @@ import { Inter, Cabin } from "next/font/google";
 import "./globals.css";
 import Footer from "./components/layout/footer";
 import Navbar from "./components/layout/navbar";
-import siteConfig from '../../site.config';
+import siteConfig from "@site.config";
 
 const inter = Inter({
   weight: ["400", "600", "700"],

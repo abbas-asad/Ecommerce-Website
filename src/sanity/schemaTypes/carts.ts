@@ -1,4 +1,4 @@
-export const cartschema = {
+export const cartsSchema = {
     name: 'cart',
     title: 'Cart',
     type: 'document',

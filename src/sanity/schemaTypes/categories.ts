@@ -1,10 +1,11 @@
-// schemas/category.ts
+import { Tags } from 'lucide-react'
 import { defineType, defineField } from 'sanity'
 
-export const categorySchema = defineType({
+export const categoriesSchema = defineType({
     name: 'category',
-    title: 'Category',
+    title: 'Categories',
     type: 'document',
+    icon: Tags,
     fields: [
         defineField({
             name: 'title',

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { User, ShoppingCart, Menu, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,7 @@ import siteConfig from "@site.config"
 import { useCart } from "@/context/cart-context"
 import { useRouter } from "next/navigation"
 import { client } from "@/sanity/lib/client"
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from "uuid"
 
 import {
   DropdownMenu,
@@ -19,13 +19,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 const navItems = [
   { name: "Home", href: "/" },
   { name: "Shop", href: "/shop" },
-  { name: "Account", href: "/account" },
   { name: "Contact", href: "/contact" },
+  { name: "FAQ", href: "/faq" },
 ]
 
 interface Product {
@@ -47,13 +53,24 @@ export default function Navbar() {
 
   useEffect(() => {
     // Handle localStorage after component mounts
-    const storedUserId = window.localStorage.getItem('userId')
+    const storedUserId = window.localStorage.getItem("userId")
     const newUserId = storedUserId || uuidv4()
     if (!storedUserId) {
-      window.localStorage.setItem('userId', newUserId)
+      window.localStorage.setItem("userId", newUserId)
     }
     setUserId(newUserId)
   }, [])
+
+  // Memoize performSearch so that its reference only changes when searchQuery changes
+  const performSearch = useCallback(async () => {
+    const query = `*[_type == "product" && title match "${searchQuery}*"] {
+      _id,
+      title,
+      slug
+    }`
+    const results = await client.fetch(query)
+    setSearchResults(results)
+  }, [searchQuery])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -65,17 +82,7 @@ export default function Navbar() {
     }, 300)
 
     return () => clearTimeout(delayDebounceFn)
-  }, [searchQuery])
-
-  const performSearch = async () => {
-    const query = `*[_type == "product" && title match "${searchQuery}*"] {
-      _id,
-      title,
-      slug
-    }`
-    const results = await client.fetch(query)
-    setSearchResults(results)
-  }
+  }, [searchQuery, performSearch])
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,7 +94,6 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white py-4 shadow-sm sticky top-0 z-30">
-      {/* Rest of your navbar JSX remains the same */}
       <div className="container mx-auto px-medium lg:px-large">
         <div className="flex items-center justify-between h-12">
           <Link href="/" className="text-xl font-semibold text-gray-900">
@@ -97,7 +103,10 @@ export default function Navbar() {
           <ul className="hidden md:flex space-x-8 font-medium text-gray-800">
             {navItems.map((item) => (
               <li key={item.name}>
-                <Link href={item.href} className="hover:text-black hover:underline transition-colors">
+                <Link
+                  href={item.href}
+                  className="hover:text-black hover:underline transition-colors"
+                >
                   {item.name}
                 </Link>
               </li>
@@ -112,33 +121,40 @@ export default function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="top" className="w-full">
-                <SheetHeader>
-                  <SheetTitle>Search Products</SheetTitle>
-                </SheetHeader>
-                <div className="py-4">
-                  <form className="flex gap-2" onSubmit={handleSearchSubmit}>
-                    <Input
-                      placeholder="Search for furniture, decor and more..."
-                      className="flex-1"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <Button type="submit">Search</Button>
-                  </form>
-                  {searchResults.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      {searchResults.map((product) => (
-                        <Link
-                          key={product._id}
-                          href={`/products/${product.slug.current}`}
-                          className="block p-2 hover:bg-gray-100 rounded"
-                          onClick={() => setIsSearchOpen(false)}
-                        >
-                          {product.title}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                <div className="container mx-auto px-medium lg:px-large">
+                  <SheetHeader>
+                    <SheetTitle>Search Products</SheetTitle>
+                  </SheetHeader>
+                  <div className="py-4">
+                    <form className="flex gap-2" onSubmit={handleSearchSubmit}>
+                      <Input
+                        placeholder="Search for furniture, decor and more..."
+                        className="flex-1"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      <Button
+                        type="submit"
+                        className="bg-[#B88E2F] hover:bg-[#A47E2A] text-white"
+                      >
+                        Search
+                      </Button>
+                    </form>
+                    {searchResults.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        {searchResults.map((product) => (
+                          <Link
+                            key={product._id}
+                            href={`/products/${product.slug.current}`}
+                            className="block p-2 hover:bg-gray-100 rounded"
+                            onClick={() => setIsSearchOpen(false)}
+                          >
+                            {product.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -182,7 +198,7 @@ export default function Navbar() {
                   <ShoppingCart size={20} className="text-gray-700" />
                   <span
                     className={`absolute -top-2 -right-2 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center ${
-                      cartItems.length > 0 ? 'bg-[#A47E2A]' : 'hidden'
+                      cartItems.length > 0 ? "bg-[#A47E2A]" : "hidden"
                     }`}
                   >
                     {cartItems.length}

@@ -25,3 +25,32 @@ prodcut cards aur empty dono dono may rop heading name hai is ko baad may sahi k
 8.review ka error kay latest uper aur data sahi trha sahi na ky cart ki trha
 
 checkout may say wo error wla option khatm aur input component/ui/input bhi pehle ki trha krdia hai
+
+contact ki kuch nayi ko dekh kr lana hai ya nhi  
+
+sirf checkout kay required ki jga aik hi
+
+filhal wishlist nhi lga rha
+
+order ka status utha kr rkh dia time ky sath
+
+
+
+
+Short and Easy tasks:
+1.wishlist ❔
+2.loading & not found mixup ✅ ❔
+3.product cards ✅ and card and asgaard sofa betterment ✅
+4.social media links in singal product 
+5.contact form working by sanity ✅
+6.Orders tofixed etc error
+7.FAQ bn gya ✅
+8.Search error handle
+9.schema sahi aur acha
+10.mera apna shoq colors waghera ka (sab)
+11.website ki har cheez ka acha layout 
+12.clerk
+
+Lenghty tasks:
+1.Stock
+2.Pagination

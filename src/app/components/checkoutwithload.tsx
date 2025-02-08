@@ -1,10 +1,16 @@
 "use client"
 
-import { useState, FormEvent } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -37,7 +43,10 @@ const formSchema = z.object({
   phone: z
     .string()
     .trim()
-    .regex(/^(03\d{9}|\+92\d{10})$/, { message: "Enter a valid phone number (e.g., 03112540080 or +923112540080)" }),
+    .regex(/^(03\d{9}|\+92\d{10})$/, {
+      message:
+        "Enter a valid phone number (e.g., 03112540080 or +923112540080)",
+    }),
 
   address: z
     .string()
@@ -62,57 +71,22 @@ const formSchema = z.object({
   }),
 })
 
-// const formSchema = z.object({
-//   firstName: z
-//     .string()
-//     .trim()
-//     .min(1, { message: "First name is required" })
-//     .max(50, { message: "First name must be at most 50 characters" }),
-
-//   lastName: z
-//     .string()
-//     .trim()
-//     .min(1, { message: "Last name is required" })
-//     .max(50, { message: "Last name must be at most 50 characters" }),
-
-//   phone: z
-//     .string()
-//     .trim()
-//     .regex(/^(03\d{9}|\+92\d{10})$/, { message: "Enter a valid Pakistani phone number (e.g., 03001234567 or +923001234567)" }),
-
-//   address: z
-//     .string()
-//     .trim()
-//     .min(5, { message: "Address must be at least 5 characters long" })
-//     .max(100, { message: "Address must be at most 100 characters" }),
-
-//   city: z
-//     .string()
-//     .trim()
-//     .min(1, { message: "City is required" })
-//     .max(50, { message: "City must be at most 50 characters" }),
-
-//   additionalInfo: z
-//     .string()
-//     .trim()
-//     .max(200, { message: "Additional information must be at most 200 characters" })
-//     .optional(),
-
-//   paymentMethod: z.enum(["bank-transfer", "cash"], {
-//     message: "Invalid payment method",
-//   }),
-// });
-
-
-//  If I want advanced validation
-
-
 type FormValues = z.infer<typeof formSchema>
 
 export default function Checkout() {
   const { items: cartItems, clearCart } = useCart()
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // Local state to delay showing the empty cart message
+  const [showEmptyMessage, setShowEmptyMessage] = useState(false)
+
+  // Delay before showing the empty cart message (adjust the delay as needed)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowEmptyMessage(true)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
 
   const {
     control,
@@ -122,11 +96,15 @@ export default function Checkout() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       city: 'Karachi',
-      paymentMethod: 'cash'
-    }
+      paymentMethod: 'cash',
+    },
   })
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  // Calculate totals
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
   const tax = subtotal * 0.1
   const total = subtotal + tax
 
@@ -146,25 +124,25 @@ export default function Checkout() {
           lastName: data.lastName,
           phone: data.phone,
           address: data.address,
-          city: data.city
+          city: data.city,
         },
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           _key: uuidv4(),
           product: { _ref: item.id, _type: 'reference' },
           quantity: item.quantity,
           price: item.price,
           size: item.size,
-          color: item.color
+          color: item.color,
         })),
         paymentMethod: data.paymentMethod,
         additionalInfo: data.additionalInfo,
         totals: {
           subtotal,
           tax,
-          total
+          total,
         },
         status: 'pending',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       }
 
       await client.create(orderDocument)
@@ -179,10 +157,17 @@ export default function Checkout() {
     }
   }
 
-  if (cartItems.length === 0) {
+  // Instead of immediately showing the empty checkout page when cartItems is empty,
+  // show a loading indicator until after a short delay.
+  if (cartItems.length === 0 && !showEmptyMessage) {
     return (
-      <Emptycartmessage headingName="Checkout" />
+      <div className="container mx-auto px-medium lg:px-large py-8">
+        <p className="text-center text-xl font-bold">Loading cart...</p>
+      </div>
     )
+  }
+  if (cartItems.length === 0) {
+    return <Emptycartmessage headingName="Checkout" />
   }
 
   return (
@@ -199,10 +184,7 @@ export default function Checkout() {
                   name="firstName"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="firstName"
-                    />
+                    <Input {...field} id="firstName" />
                   )}
                 />
                 {errors.firstName && (
@@ -215,10 +197,7 @@ export default function Checkout() {
                   name="lastName"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      {...field}
-                      id="lastName"
-                    />
+                    <Input {...field} id="lastName" />
                   )}
                 />
                 {errors.lastName && (
@@ -233,11 +212,7 @@ export default function Checkout() {
                 name="phone"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="phone"
-                    type="tel"
-                  />
+                  <Input {...field} id="phone" type="tel" />
                 )}
               />
               {errors.phone && (
@@ -251,10 +226,7 @@ export default function Checkout() {
                 name="address"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    id="address"
-                  />
+                  <Input {...field} id="address" />
                 )}
               />
               {errors.address && (
@@ -268,10 +240,7 @@ export default function Checkout() {
                 name="city"
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select city" />
                     </SelectTrigger>
@@ -292,11 +261,7 @@ export default function Checkout() {
                 name="additionalInfo"
                 control={control}
                 render={({ field }) => (
-                  <Textarea
-                    {...field}
-                    id="additionalInfo"
-                    className="min-h-[100px]"
-                  />
+                  <Textarea {...field} id="additionalInfo" className="min-h-[100px]" />
                 )}
               />
             </div>
@@ -305,18 +270,13 @@ export default function Checkout() {
               name="paymentMethod"
               control={control}
               render={({ field }) => (
-                <RadioGroup
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  className="mt-6"
-                >
-                  {/* <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="bank-transfer" id="bank-transfer" />
-                    <Label htmlFor="bank-transfer" className="font-medium">Direct Bank Transfer</Label>
-                  </div> */}
+                <RadioGroup value={field.value} onValueChange={field.onChange} className="mt-6">
+                  {/* Uncomment or add more payment methods as needed */}
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="cash" id="cash" />
-                    <Label htmlFor="cash" className="font-medium">Cash On Delivery</Label>
+                    <Label htmlFor="cash" className="font-medium">
+                      Cash On Delivery
+                    </Label>
                   </div>
                 </RadioGroup>
               )}
@@ -342,30 +302,40 @@ export default function Checkout() {
                     <div>
                       <span className="text-gray-600">{item.name}</span>
                       <div className="text-sm text-gray-500">
-                        {item.quantity} × {ecommerceConfig.currency.prefix}{item.price.toFixed(2)}
+                        {item.quantity} × {ecommerceConfig.currency.prefix}
+                        {item.price.toFixed(2)}
                       </div>
                     </div>
                   </div>
-                  <span>{ecommerceConfig.currency.prefix}{(item.quantity * item.price).toFixed(2)}</span>
+                  <span>
+                    {ecommerceConfig.currency.prefix}
+                    {(item.quantity * item.price).toFixed(2)}
+                  </span>
                 </div>
               ))}
               <div className="flex justify-between border-t pt-4">
                 <span className="text-gray-600">Subtotal</span>
-                <span>{ecommerceConfig.currency.prefix}{subtotal.toFixed(2)}</span>
+                <span>
+                  {ecommerceConfig.currency.prefix}
+                  {subtotal.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between border-t pt-4">
                 <span className="text-gray-600">Tax (10%)</span>
-                <span>{ecommerceConfig.currency.prefix}{tax.toFixed(2)}</span>
+                <span>
+                  {ecommerceConfig.currency.prefix}
+                  {tax.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between border-t pt-4">
                 <span className="font-semibold">Total</span>
-                <span className="text-[#B88E2F] font-semibold text-xl">{ecommerceConfig.currency.prefix}{total.toFixed(2)}</span>
+                <span className="text-[#B88E2F] font-semibold text-xl">
+                  {ecommerceConfig.currency.prefix}
+                  {total.toFixed(2)}
+                </span>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full bg-[#B88E2F] hover:bg-[#A47E2A] text-white mt-4"
-              >
+              <Button type="submit" className="w-full bg-[#B88E2F] hover:bg-[#A47E2A] text-white mt-4">
                 Place order
               </Button>
             </div>

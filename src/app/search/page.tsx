@@ -28,7 +28,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   const products = await client.fetch<Product[]>(`
-    *[_type == "product" && title match "${query}*"] {
+    *[_type == "product" && title match "*${query}*"] {
       _id,
       title,
       slug,
@@ -43,7 +43,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Search Results for "{query}"</h1>
+      <h1 className="text-2xl font-bold mb-4">Search Results for &quot;{query}&quot;</h1>
       {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
@@ -52,7 +52,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         </div>
       ) : (
         <div>
-          <p>No products found for "{query}".</p>
+          <p>No products found for &quot;{query}&quot;.</p>
           <Link href="/shop">
             <Button className="mt-4">Browse all products</Button>
           </Link>

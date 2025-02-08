@@ -1,6 +1,6 @@
 const siteConfig = {
-    name: "Khareedo", // Website name
-    baseUrl: "https://khareedo.vercel.app", // Website base URL
+    name: "Market", // Website name
+    baseUrl: "https://market.vercel.app", // Website base URL
     locale: "en-PK", // Default language and region
     theme: {
         defaultTheme: "light", // Default theme (light or dark)
@@ -8,13 +8,13 @@ const siteConfig = {
     },
     contact: {
         address: "3/2 Nazimabad, Karachi, 76400, Pakistan", // Office address
-        email: "khareedo@gmail.com", // Contact email
+        email: "market@gmail.com", // Contact email
         phone: "+92-311-2540080", // Contact phone number
     },
     seo: {
-        defaultTitle: "Khareedo - Your Favorite Marketplace",
-        defaultDescription: "Shop the best products at unbeatable prices on Khareedo.",
-        keywords: ["ecommerce", "shopping", "Khareedo"],
+        defaultTitle: "Market - Your Favorite Marketplace",
+        defaultDescription: "Shop the best products at unbeatable prices on Market.",
+        keywords: ["ecommerce", "shopping", "Market"],
     },
 };
 

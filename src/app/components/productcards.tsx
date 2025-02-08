@@ -1,84 +1,122 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { client } from "@/sanity/lib/client";
-import { Product as IProduct } from "../studio/sanity.types"
-import ecommerceConfig from "@ecommerce.config"
+"use client"
 
-interface headingNameProp {
-    headingName: string;
-    para?: string;
-    limit?: number;
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { client } from "@/sanity/lib/client"
+import type { Product as IProduct } from "../studio/sanity.types"
+import ecommerceConfig from "@ecommerce.config"
+import { Loader2 } from "lucide-react"
+import Pagination from "./pagination" // import our pagination component
+
+interface ProductcardsProps {
+  headingName: string
+  para?: string
+  limit?: number
 }
 
-export default function Productcards(props: headingNameProp) {
-    const [productData, setProductData] = useState<IProduct[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+export default function Productcards({ headingName, para, limit }: ProductcardsProps) {
+  // currentPage, pageSize, products, loading, and total count state
+  const [productData, setProductData] = useState<IProduct[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = limit || 8
+  const [totalProducts, setTotalProducts] = useState(0)
 
-    useEffect(() => {
-        const fetchProducts = async () => {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true)
+      // Get total count so we know how many pages are available
+      const total = await client.fetch(`count(*[_type == "product"])`)
+      setTotalProducts(total)
 
-            const query = `*[_type == "product"]{_id, title, price, "thumbnail": thumbnail.asset->url, rating, slug}`;
-            const data = await client.fetch(query);
-            setProductData(data);
-            setIsLoading(false); // Data has finished loading
-        };
+      // Calculate the offset for the current page.
+      const skip = (currentPage - 1) * pageSize
 
-        fetchProducts();
-    }, []);
+      // Use GROQ slicing to fetch only the current page’s products.
+      const query = `
+        *[_type == "product"][${skip}...${skip + pageSize}]{
+          _id,
+          title,
+          price,
+          "thumbnail": thumbnail.asset->url,
+          rating,
+          slug
+        }
+      `
+      const data = await client.fetch(query)
+      setProductData(data)
+      setIsLoading(false)
+    }
 
-    const displayedProducts = props.limit ? productData.slice(0, props.limit) : productData;
+    fetchProducts()
+  }, [currentPage, pageSize])
 
-    return (
-        <section className="py-16 bg-white">
-            <div className="container mx-auto py-8 px-medium lg:px-large">
-                <div className="text-center mb-20">
-                    <h2 className="text-4xl font-semibold mb-4">{props.headingName}</h2>
-                    <p className="text-gray-500">{props.para}</p>
-                </div>
+  return (
+    <section className="py-16 bg-gray-50">
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">{headingName}</h2>
+          {para && <p className="text-gray-600 max-w-2xl mx-auto">{para}</p>}
+        </div>
 
-                {/* Display loading indicator while the data is being fetched */}
-                {isLoading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full border-t-transparent border-primary"></div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="w-12 h-12 animate-spin text-primary" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {productData.map((product: IProduct) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-lg"
+                >
+                  <Link href={`/products/${product.slug.current}`}>
+                    <div className="cursor-pointer">
+                      <div className="aspect-square relative overflow-hidden">
+                        <Image
+                          src={product.thumbnail || "/placeholder.svg"}
+                          alt={product.title}
+                          fill
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-1">{product.title}</h3>
+                        <p className="font-bold text-xl text-primary mb-2">
+                          {ecommerceConfig.currency.prefix}
+                          {product.price.toFixed(2)}
+                        </p>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <svg
+                              key={i}
+                              className="w-5 h-5 text-yellow-400 fill-current"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" />
+                            </svg>
+                          ))}
+                          <span className="ml-2 text-sm text-gray-600">
+                            {product.rating?.toFixed(1) || "N/A"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-16 gap-y-24">
-                        {displayedProducts.map((product: IProduct) => (
-                            <div key={product._id} className="space-y-3">
-                                <Link href={`/products/${product.slug.current}`}>
-                                    <div className="cursor-pointer space-y-3">
-                                        <div className="aspect-square relative overflow-hidden space-y-3">
-                                            <Image
-                                                src={product.thumbnail}
-                                                alt={product.title}
-                                                width={400}
-                                                height={400}
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <h3 className="font-medium text-base line-clamp-1">{product.title}</h3>
-                                        <p className="font-semibold text-base">{ecommerceConfig.currency.prefix}{product.price.toFixed(2)}</p>
-                                        <p className="font-semibold text-base text-[#B88E2F]">
-                                            Rating: {product.rating?.toFixed(1) || "N/A"}
-                                        </p>
-                                    </div>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <div className="text-center mt-12">
-                    <Link
-                        href="#"
-                        className="inline-block border-b-2 border-black pb-1 font-medium hover:opacity-70 transition-opacity"
-                    >
-                        View More
-                    </Link>
+                  </Link>
                 </div>
+              ))}
             </div>
-        </section>
-    );
+            {/* Pagination Controls */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(totalProducts / pageSize)}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        )}
+      </div>
+    </section>
+  )
 }

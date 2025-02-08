@@ -43,10 +43,10 @@ export default async function Productdetails({ params }: { params: { slug: strin
 
   return (
     <main>
-      <Product params={params} reviews={reviews} />
+      {/* Removed reviews prop from Product to match its props interface */}
+      <Product params={params} />
       <ReviewSection productId={product._id} initialReviews={reviews} />
       <Productcards headingName="Related Products" limit={4} />
     </main>
   )
 }
-

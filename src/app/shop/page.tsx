@@ -8,7 +8,7 @@ export default function ShopPage() {
     <main>
       <Heroheader sectionName="Shop" />
       {/* <Dropdownmenu /> */}
-      <Productcards headingName="Furniture Collection" para="Explore our exquisite range of furniture, crafted to add elegance and functionality to every corner of your home." />
+      <Productcards headingName="Products Collection" para="Explore our exquisite range of furniture, crafted to add elegance and functionality to every corner of your home." />
       <Featuressection />
     </main>
   )

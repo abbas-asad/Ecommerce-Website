@@ -1,7 +1,6 @@
 // Import required dependencies
 import "dotenv/config";
 import { createClient } from "@sanity/client";
-import { nanoid } from "nanoid"; // For generating unique _key values
 
 // Configure Sanity client
 const client = createClient({
@@ -12,147 +11,78 @@ const client = createClient({
   useCdn: false,
 });
 
-// Function to upload image to Sanity
-async function uploadImageToSanity(imageUrl) {
-  try {
-    const response = await fetch(imageUrl);
-    const buffer = await response.arrayBuffer();
-
-    const asset = await client.assets.upload('image', Buffer.from(buffer), {
-      filename: imageUrl.split('/').pop()
-    });
-
-    return asset._id;
-  } catch (error) {
-    console.error(`Failed to upload image ${imageUrl}:`, error);
-    return null;
-  }
-}
-
-// Function to create a slug from title
+// (Optional) Function to create a slug from a title if you need to generate one
+// In this case, our API is already providing a slug.
 function createSlug(title) {
-  return title
+  return String(title)
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
-// Function to create or get category
-async function createOrGetCategory(categoryName) {
+// Function to create or get a category using data from the API object
+async function createOrGetCategory(categoryData) {
+  // Destructure the properties from the API object.
+  // For example, categoryData = { slug: "furniture", name: "Furniture", url: "..." }
+  const { name, slug, url } = categoryData;
   try {
-    // First, try to find existing category
+    // First, try to find an existing category with the same title
     const existingCategory = await client.fetch(
-      `*[_type == "category" && title == $categoryName][0]`,
-      { categoryName }
+      `*[_type == "category" && title == $title][0]`,
+      { title: name }
     );
 
     if (existingCategory) {
-      console.log(`Found existing category: ${categoryName}`);
+      console.log(`Found existing category: ${name}`);
       return existingCategory._id;
     }
 
-    // If not found, create new category
+    // If not found, create a new category document in Sanity.
+    // Adjust the fields here if your category schema requires additional fields.
     const newCategory = await client.create({
-      _type: 'category',
-      title: categoryName
+      _type: "category",
+      title: name,
+      slug: {
+        _type: "slug",
+        current: slug, // using the API-provided slug
+      },
+      // If your schema has a field for URL, include it.
+      url: url,
     });
 
-    console.log(`Created new category: ${categoryName}`);
+    console.log(`Created new category: ${name}`);
     return newCategory._id;
   } catch (error) {
-    console.error('Error creating/getting category:', error);
+    console.error("Error creating/getting category:", error);
     throw error;
   }
 }
 
-// Main migration function
-async function migrateToSanity() {
+// Main migration function for categories
+async function migrateCategories() {
   try {
-    // First, create or get the furniture category
-    console.log('Setting up furniture category...');
-    const categoryId = await createOrGetCategory('Furniture');
-
-    const API_URL = "https://dummyjson.com/products/category/furniture";
+    // API endpoint that returns an array of category objects
+    const API_URL = "https://dummyjson.com/products/categories";
     const response = await fetch(API_URL);
-    const { products } = await response.json();
+    const data = await response.json();
 
-    for (const product of products) {
-      console.log(`Processing product: ${product.title}`);
+    // The API returns an array of objects
+    // Example: [{ "slug": "beauty", "name": "Beauty", "url": "https://dummyjson.com/products/category/beauty" }, ...]
+    const categories = data;
 
-      // Upload thumbnail
-      const thumbnailId = await uploadImageToSanity(product.thumbnail);
+    console.log(`Found ${categories.length} categories from API.`);
 
-      // Upload additional images
-      const imageAssets = await Promise.all(
-        product.images.map(imageUrl => uploadImageToSanity(imageUrl))
-      );
-
-      // Prepare product document
-      const sanityProduct = {
-        _type: 'product',
-        title: product.title,
-        slug: {
-          _type: 'slug',
-          current: createSlug(product.title)
-        },
-        description: product.description,
-        category: {
-          _type: 'reference',
-          _ref: categoryId  // Use the ID from our created/fetched category
-        },
-        price: product.price,
-        discountPercentage: product.discountPercentage,
-        rating: product.rating,
-        stock: product.stock,
-        tags: ['furniture'],
-        brand: product.brand,
-        sku: `SKU-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        weight: product.weight || 0,
-        dimensions: {
-          width: product.dimensions?.width || 0,
-          height: product.dimensions?.height || 0,
-          depth: product.dimensions?.depth || 0
-        },
-        warrantyInformation: "Standard 1-year warranty",
-        shippingInformation: "Free shipping on orders over $50",
-        availabilityStatus: product.stock > 0 ? 'In Stock' : 'Out of Stock',
-        reviews: [],
-        returnPolicy: "30-day return policy",
-        minimumOrderQuantity: 1,
-        meta: {
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          barcode: `BAR${Date.now()}`,
-          qrCode: `QR${Date.now()}`
-        },
-        thumbnail: thumbnailId ? {
-          _type: 'image',
-          asset: {
-            _type: 'reference',
-            _ref: thumbnailId
-          }
-        } : undefined,
-        images: imageAssets.filter(Boolean).map(imageId => ({
-          _type: 'image',
-          _key: nanoid(), // Generate a unique key for each image
-          asset: {
-            _type: 'reference',
-            _ref: imageId
-          }
-        }))
-      };
-
-      // Create document in Sanity
-      const result = await client.create(sanityProduct);
-      console.log(`Successfully migrated product: ${product.title} (ID: ${result._id})`);
+    // Loop over each category object and create or get it in Sanity
+    for (const categoryData of categories) {
+      await createOrGetCategory(categoryData);
     }
 
-    console.log('Migration completed successfully!');
+    console.log("Category migration completed successfully!");
   } catch (error) {
-    console.error('Migration failed:', error);
-    console.error('Error details:', error.message);
+    console.error("Category migration failed:", error);
+    console.error("Error details:", error.message);
   }
 }
 
 // Run the migration
-migrateToSanity();
+migrateCategories();

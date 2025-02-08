@@ -60,7 +60,7 @@ export default function ProductClient({ product }: { product: any }) {
             <div className="grid md:grid-cols-2 gap-8">
                 {/* Images section remains the same */}
                 <div className="flex gap-4">
-                    <div className="flex flex-col gap-4">
+                    {/* <div className="flex flex-col gap-4">
                         {[0, 1, 2].map((i) => (
                             <button key={i} className="w-20 h-20 border rounded-lg overflow-hidden bg-[#fff9ef]">
                                 <Image
@@ -72,7 +72,7 @@ export default function ProductClient({ product }: { product: any }) {
                                 />
                             </button>
                         ))}
-                    </div>
+                    </div> */}
                     <div className="flex-1 bg-[#fff9ef] flex items-center">
                         <Image
                             src={product.thumbnail}

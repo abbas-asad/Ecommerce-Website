@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { User, ShoppingCart, Menu, Search } from "lucide-react"
+import { User, ShoppingCart, Menu, Search, ClipboardList } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import siteConfig from "@site.config"
@@ -159,7 +159,7 @@ export default function Navbar() {
               </SheetContent>
             </Sheet>
 
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-10 w-10">
                   <User size={20} className="text-gray-700" />
@@ -190,16 +190,21 @@ export default function Navbar() {
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
+            <Link href={`/orders/${userId}`}>
+              <Button variant="ghost" size="icon" className="h-10 w-10">
+                <ClipboardList size={20} className="text-gray-700" />
+
+              </Button>
+            </Link>
 
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="h-10 w-10">
                 <div className="relative">
                   <ShoppingCart size={20} className="text-gray-700" />
                   <span
-                    className={`absolute -top-2 -right-2 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center ${
-                      cartItems.length > 0 ? "bg-[#A47E2A]" : "hidden"
-                    }`}
+                    className={`absolute -top-2 -right-2 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center ${cartItems.length > 0 ? "bg-[#A47E2A]" : "hidden"
+                      }`}
                   >
                     {cartItems.length}
                   </span>

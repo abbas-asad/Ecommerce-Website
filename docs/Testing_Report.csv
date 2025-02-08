@@ -1,0 +1,11 @@
+Test Case ID,Test Type,Test Scenario,Test Steps,Expected Result,Actual Result,Status,Severity Level,Remarks
+TC001,API Calls,Verify API response status and data format,Send a GET request to the API endpoint,API returns status 200 and JSON data,200 & JSON,Pass,High,Successful
+TC002,Functionality,Verify product listing,Load homepage and navigate to the products page,Products should be displayed correctly,As expected,Pass,High,Successful
+TC003,Functionality,Verify dynamic routing for product pages,Click on a product to open its details page,Product details should load dynamically,As expected,Pass,High,Successful
+TC004,Functionality,Verify add-to-cart functionality,Select a product and click "Add to Cart",Product should be added to cart successfully,As expected,Pass,Medium,Successful
+TC005,Form Validation,Verify checkout form validation,Submit the checkout form with empty fields,Validation errors should appear,As expected,Pass,High,Successful
+TC006,Functionality,Verify order placement,After filling checkout form correctly,Order should be placed successfully,As expected,Pass,Medium,Successful
+TC007,Functionality,Verify order history,Navigate to "Order History Page" after order placement,Past orders should be displayed correctly,As expected,Pass,Medium,Successful
+TC008,Responsiveness,Verify website layout on different screen sizes,Open the website on mobiles tablets and desktop,Layout should adjust properly without breaking,As expected,Pass,Medium,Successful
+TC009,Lighthouse Test,Check website performance using Lighthouse,Run Lighthouse audit in Chrome DevTools,Performance should be above 70,71 (as per screenshot),Pass,Medium,Successful
+TC010,Cypress Test,Verify navigation using Cypress,Run Cypress test script to check navigation across pages,Navigation should work correctly without errors,As expected,Pass,Medium,Successful

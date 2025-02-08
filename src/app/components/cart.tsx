@@ -51,7 +51,7 @@ export default function Cart() {
 
     return (
         <div className="container mx-auto px-medium lg:px-large py-8">
-            <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
+            <h1 className="text-2xl font-bold mb-6">Shopping Cart ({cartItems.length})</h1>
             <div className="grid lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-3">
                     <div className="hidden md:block bg-[#FFF9E5] p-4 rounded-t-lg">

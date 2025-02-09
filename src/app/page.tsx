@@ -10,7 +10,7 @@ export default function Home() {
     <main className="bg-[#FFF9F3]">
       <Hero />
       <CategorySection />
-      <Productcards headingName="Top Picks For You" para="Discover the perfect blend of style and comfort with our exceptional range of premium furniture." limit={4} />
+      <Productcards headingName="Top Picks For You" para="Discover the perfect blend of style and comfort with our exceptional range of premium furniture." limit={4}  showPagination={false} />
       <Newarrivalssection />
       <Blogsection />
       <Instagramsection />

@@ -13,9 +13,19 @@ interface ProductcardsProps {
   headingName: string
   para?: string
   limit?: number
+  /**
+   * Set to false if you do not want to show the pagination controls.
+   * Defaults to true.
+   */
+  showPagination?: boolean
 }
 
-export default function Productcards({ headingName, para, limit }: ProductcardsProps) {
+export default function Productcards({
+  headingName,
+  para,
+  limit,
+  showPagination = true,
+}: ProductcardsProps) {
   // currentPage, pageSize, products, loading, and total count state
   const [productData, setProductData] = useState<IProduct[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -108,12 +118,14 @@ export default function Productcards({ headingName, para, limit }: ProductcardsP
                 </div>
               ))}
             </div>
-            {/* Pagination Controls */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(totalProducts / pageSize)}
-              onPageChange={setCurrentPage}
-            />
+            {/* Conditionally render Pagination Controls */}
+            {showPagination && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(totalProducts / pageSize)}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </>
         )}
       </div>

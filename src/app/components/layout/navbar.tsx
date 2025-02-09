@@ -128,7 +128,7 @@ export default function Navbar() {
                   <div className="py-4">
                     <form className="flex gap-2" onSubmit={handleSearchSubmit}>
                       <Input
-                        placeholder="Search for furniture, decor and more..."
+                        placeholder="Search..."
                         className="flex-1"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}

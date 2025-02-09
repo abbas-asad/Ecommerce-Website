@@ -33,9 +33,9 @@ const Hero = () => {
             <Button
               asChild
               variant="outline"
-              className="border-white text-black hover:bg-white hover:text-black text-lg px-8 py-3"
+              className="bg-white text-black hover:bg-gray-200 text-lg px-8 py-3"
             >
-              <Link href="/collections">View Collections</Link>
+              <Link href="/shop">View Collections</Link>
             </Button>
           </div>
         </div>

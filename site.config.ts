@@ -1,6 +1,6 @@
 const siteConfig = {
-    name: "Market", // Website name
-    baseUrl: "https://market.vercel.app", // Website base URL
+    name: "Luxemart", // Website name
+    baseUrl: "https://luxemart.vercel.app", // Website base URL
     locale: "en-PK", // Default language and region
     theme: {
         defaultTheme: "light", // Default theme (light or dark)
@@ -8,13 +8,13 @@ const siteConfig = {
     },
     contact: {
         address: "3/2 Nazimabad, Karachi, 76400, Pakistan", // Office address
-        email: "market@gmail.com", // Contact email
+        email: "luxemart@gmail.com", // Contact email
         phone: "+92-311-2540080", // Contact phone number
     },
     seo: {
-        defaultTitle: "Market - Your Favorite Marketplace",
+        defaultTitle: "Luxemart - Your Favorite Marketplace",
         defaultDescription: "Shop the best products at unbeatable prices on Market.",
-        keywords: ["ecommerce", "shopping", "Market"],
+        keywords: ["ecommerce", "shopping", "Luxemart"],
     },
 };
 

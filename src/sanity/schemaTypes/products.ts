@@ -66,11 +66,54 @@ export const productsSchema = defineType({
       of: [{ type: 'string' }],
       options: {
         list: [
-          { title: "furniture", value: "furniture" },
+          // { title: "furniture", value: "furniture" },
           // Add other predefined tags if desired
         ],
       },
     }),
+
+    // // products status tags
+
+    //   // Additional product status flags
+    defineField({
+      name: 'isFeatured',
+      title: 'Featured',
+      type: 'boolean',
+      description: 'Mark this product as featured',
+    }),
+    defineField({
+      name: 'isTrending',
+      title: 'Trending',
+      type: 'boolean',
+      description: 'Mark this product as trending',
+    }),
+    defineField({
+      name: 'isNewArrival',
+      title: 'New Arrival',
+      type: 'boolean',
+      description: 'Mark this product as a new arrival',
+    }),
+    defineField({
+      name: 'isBestSeller',
+      title: 'Best Seller',
+      type: 'boolean',
+      description: 'Mark this product as a best seller',
+    }),
+    defineField({
+      name: 'isRecommended',
+      title: 'Recommended',
+      type: 'boolean',
+      description: 'Mark this product as recommended',
+    }),
+    defineField({
+      name: 'isLimitedTimeDeal',
+      title: 'Limited-Time Deal',
+      type: 'boolean',
+      description: 'Mark this product as a limited-time deal',
+    }),
+
+    // // products status tags
+
     defineField({
       name: 'brand',
       title: 'Brand',

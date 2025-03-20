@@ -1,12 +1,12 @@
 import React from 'react'
-import Cart from '../components/cart'
-import Featuressection from '../components/layout/featuressection'
+import Cart from '../components/cart/cart'
+import WhyChooseUs from '../components/layout/why-choose-us'
 
 const CartPage = () => {
   return (
     <main>
       <Cart />
-      <Featuressection />
+      <WhyChooseUs />
     </main>
   )
 }

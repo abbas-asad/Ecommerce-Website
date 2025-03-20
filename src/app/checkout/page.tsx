@@ -1,13 +1,13 @@
-import Checkout from "../components/checkout"
-import Featuressection from "../components/layout/featuressection"
-import Heroheader from "../components/layout/heroheader"
+// import Heroheader from "../components/layout/heroheader"
+import CheckOut from "../components/checkout/check-out"
+import WhyChooseUs from "../components/layout/why-choose-us"
 
 export default function Account() {
   return (
     <main>
-      <Heroheader sectionName="Checkout" />
-      <Checkout />
-      <Featuressection />
+      {/* <Heroheader sectionName="Checkout" /> */}
+      <CheckOut />
+      <WhyChooseUs />
     </main>
   )
 }

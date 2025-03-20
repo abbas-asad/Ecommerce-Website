@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import ecommerceConfig from "@ecommerce.config"
 import { Clock, PackageCheck, BadgeCheck } from "lucide-react"
+import Loadingmessage from "@/app/components/loadingmsg"
+import EmptyState from "@/app/components/empty-state"
 
 interface Order {
   _id: string
@@ -82,28 +84,35 @@ export default function OrderConfirmation({ params }: { params: { userId: string
   }, [params.userId])
 
   if (loading) {
-    return <LoadingState />
+    return (
+      <Loadingmessage paraName="orders" />
+    )
   }
 
   if (orders.length === 0) {
-    return <NoOrders />
+    return <EmptyState
+      title="No Orders Found"
+      description="You haven't placed any orders yet."
+      buttonText="Start Shopping"
+      onButtonClick={() => window.location.href = "/shop"}
+    />
   }
 
 
   return (
     <section className="py-8 md:py-16 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-6 md:mb-8">
+        <div className="mb-6 md:mb-8 flex justify-center items-center flex-col">
           <div className="flex items-center gap-3 mb-2">
             <h1 className="text-xl md:text-2xl font-bold">Orders ({orders.length})</h1>
           </div>
-          <p className="text-sm md:text-base text-gray-600">Track and manage your purchases</p>
+          {/* <p className="text-sm md:text-base text-gray-600">Track and manage your purchases</p> */}
         </div>
 
         <div className="space-y-4 md:space-y-6">
           {orders.map((order) => (
             <div key={order._id} className="bg-white rounded-lg shadow-sm md:shadow-lg overflow-hidden border border-gray-100">
-              <div className="p-4 md:p-6 bg-gray-50 border-b border-gray-200">
+              <div className="p-4 md:p-6 border-b border-gray-200">
                 <div className="flex flex-col gap-4">
                   <div>
                     <h2 className="text-base md:text-lg font-semibold line-clamp-1">
@@ -145,7 +154,7 @@ export default function OrderConfirmation({ params }: { params: { userId: string
                     <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
                       <Clock className="w-3 h-3 md:w-4 md:h-4" />
                       <span>Est. delivery in 2 business days</span> <span className={`px-2 py-1 rounded-full text-xs md:text-sm ${order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                          order.status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                        order.status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
                         }`}>
                         {order.status}
                       </span>
@@ -204,7 +213,7 @@ export default function OrderConfirmation({ params }: { params: { userId: string
                     </div>
                     <div className="flex justify-between font-semibold pt-2 text-base md:text-lg">
                       <span>Total</span>
-                      <span className="text-[#B88E2F]">
+                      <span className="text-black">
                         {ecommerceConfig.currency.prefix}
                         {order.totals.total.toFixed(2)}
                       </span>
@@ -227,24 +236,3 @@ export default function OrderConfirmation({ params }: { params: { userId: string
     </section>
   )
 }
-
-function LoadingState() {
-  return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-[30vh] text-center">
-      <p className="text-gray-500">Loading your orders...</p>
-    </div>
-  )
-}
-
-function NoOrders() {
-  return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-[30vh] text-center">
-      <h1 className="text-2xl font-bold mb-6">No Orders Found</h1>
-      <p className="text-gray-500 mb-4">You haven&apos;t placed any orders yet.</p>
-      <Link href="/shop">
-        <Button className="bg-[#B88E2F] hover:bg-[#A47E2A] text-white">Start Shopping</Button>
-      </Link>
-    </div>
-  )
-}
-

@@ -1,4 +1,3 @@
-// cart-context.tsx
 "use client"
 
 import { createContext, useContext, useState, useEffect } from "react"
@@ -23,6 +22,7 @@ type CartContextType = {
   clearCart: () => Promise<void>
   totalItems: number
   userId: string
+  loading: boolean
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -31,7 +31,7 @@ const STORAGE_KEY = "shopping-cart"
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string>('')
 
   // Get or create user ID
@@ -41,11 +41,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   // On initialization, load the cart from localStorage (if available) 
-  // Otherwise, load from Sanity. (Choose one source of truth.)
+  // Otherwise, load from Sanity.
   useEffect(() => {
     if (!userId) return
 
     const loadCart = async () => {
+      setLoading(true)
       const savedCart = localStorage.getItem(STORAGE_KEY)
       if (savedCart) {
         setItems(JSON.parse(savedCart))
@@ -77,7 +78,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           console.error('Sanity cart load failed:', error)
         }
       }
-      setIsInitialized(true)
+      setLoading(false)
     }
 
     loadCart()
@@ -91,7 +92,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Helper: Create or update a cart document in Sanity
   const syncCartItem = async (cartItem: CartItem) => {
     try {
-      // First, try to fetch an existing cart doc that matches userID and product variant.
       const existing = await client.fetch(
         `*[_type=="cart" && userID==$userId && product._ref==$productId && size==$size && color==$color][0]._id`,
         {
@@ -103,13 +103,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       )
 
       if (existing) {
-        // If exists, update the quantity.
-        await client
-          .patch(existing)
-          .set({ quantity: cartItem.quantity })
-          .commit()
+        await client.patch(existing).set({ quantity: cartItem.quantity }).commit()
       } else {
-        // Create new document.
         await client.create({
           _type: 'cart',
           userID: userId,
@@ -127,7 +122,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Helper: Remove a cart document in Sanity
   const removeCartItemFromSanity = async (cartItem: CartItem) => {
     try {
-      // Find the document and delete it.
       const docId = await client.fetch(
         `*[_type=="cart" && userID==$userId && product._ref==$productId && size==$size && color==$color][0]._id`,
         {
@@ -147,7 +141,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = async (newItem: CartItem) => {
     setItems((currentItems) => {
-      // Check using composite key (id, size, color)
       const existingItem = currentItems.find(
         item =>
           item.id === newItem.id &&
@@ -170,7 +163,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return updatedItems
     })
 
-    // Sync this individual item to Sanity.
     await syncCartItem(newItem)
   }
 
@@ -208,7 +200,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems([])
     persistLocalCart([])
     try {
-      // Optionally, remove all cart docs for this user in Sanity.
       const docs = await client.fetch(
         `*[_type=="cart" && userID==$userId]._id`,
         { userId }
@@ -230,7 +221,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         updateQuantity,
         clearCart,
         totalItems,
-        userId
+        userId,
+        loading,
       }}
     >
       {children}

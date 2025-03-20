@@ -1,55 +1,40 @@
-"use client"
-import { useState, useEffect, useCallback } from "react"
-import Link from "next/link"
-import { User, ShoppingCart, Menu, Search, ClipboardList } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import siteConfig from "@site.config"
-import { useCart } from "@/context/cart-context"
-import { useRouter } from "next/navigation"
-import { client } from "@/sanity/lib/client"
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  Menu,
+  X,
+  ListOrdered,
+  ShoppingBag,
+} from "lucide-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import siteConfig from "@site.config";
+import { useCart } from "@/context/cart-context";
 import { v4 as uuidv4 } from "uuid"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-
-const navItems = [
-  { name: "Home", href: "/" },
-  { name: "Shop", href: "/shop" },
-  { name: "Contact", href: "/contact" },
-  { name: "FAQ", href: "/faq" },
-]
-
-interface Product {
-  _id: string
-  title: string
-  slug: {
-    current: string
-  }
-}
+// interface NavbarProps {
+//   categories: {
+//     id: number;
+//     name: string;
+//     image: string;
+//     count: number;
+//   }[];
+// }
 
 export default function Navbar() {
+
   const [userId, setUserId] = useState<string>("")
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<Product[]>([])
   const { items: cartItems } = useCart()
-  const router = useRouter()
 
   useEffect(() => {
     // Handle localStorage after component mounts
@@ -61,186 +46,165 @@ export default function Navbar() {
     setUserId(newUserId)
   }, [])
 
-  // Memoize performSearch so that its reference only changes when searchQuery changes
-  const performSearch = useCallback(async () => {
-    const query = `*[_type == "product" && title match "${searchQuery}*"] {
-      _id,
-      title,
-      slug
-    }`
-    const results = await client.fetch(query)
-    setSearchResults(results)
-  }, [searchQuery])
+
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      setMobileMenuOpen(false);
+    }
+  };
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (searchQuery) {
-        performSearch()
-      } else {
-        setSearchResults([])
-      }
-    }, 300)
-
-    return () => clearTimeout(delayDebounceFn)
-  }, [searchQuery, performSearch])
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
-      setIsSearchOpen(false)
-    }
-  }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="bg-white py-4 shadow-sm sticky top-0 z-30">
-      <div className="container mx-auto px-medium lg:px-large">
-        <div className="flex items-center justify-between h-12">
-          <Link href="/" className="text-xl font-semibold text-gray-900">
+    <header
+      className={cn(
+        "w-full py-4 transition-all duration-300 z-50 sticky top-0",
+        isScrolled ? "bg-white shadow-md dark:bg-gray-900" : "bg-white dark:bg-gray-900"
+      )}
+    >
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="text-2xl font-bold text-primary">
             {siteConfig.name}
           </Link>
 
-          <ul className="hidden md:flex space-x-8 font-medium text-gray-800">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <Link
-                  href={item.href}
-                  className="hover:text-black hover:underline transition-colors"
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="flex items-center gap-2">
-            <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <Search size={20} className="text-gray-700" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="top" className="w-full">
-                <div className="container mx-auto px-medium lg:px-large">
-                  <SheetHeader>
-                    <SheetTitle>Search Products</SheetTitle>
-                  </SheetHeader>
-                  <div className="py-4">
-                    <form className="flex gap-2" onSubmit={handleSearchSubmit}>
-                      <Input
-                        placeholder="Search..."
-                        className="flex-1"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                      <Button
-                        type="submit"
-                        className="bg-[#B88E2F] hover:bg-[#A47E2A] text-white"
-                      >
-                        Search
-                      </Button>
-                    </form>
-                    {searchResults.length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        {searchResults.map((product) => (
-                          <Link
-                            key={product._id}
-                            href={`/products/${product.slug.current}`}
-                            className="block p-2 hover:bg-gray-100 rounded"
-                            onClick={() => setIsSearchOpen(false)}
-                          >
-                            {product.title}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-
-            {/* <DropdownMenu>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="font-medium hover:text-primary">
+              Home
+            </Link>
+            <Link href="/shop" className="font-medium hover:text-primary">
+              Shop
+            </Link>
+            {/* Commented out categories dropdown
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <User size={20} className="text-gray-700" />
-                </Button>
+                <button className="font-medium hover:text-primary">Categories</button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link href="/profile" className="w-full">
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href={`/orders/${userId}`} className="w-full">
-                    Orders
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/wishlist" className="w-full">
-                    Wishlist
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link href="/logout" className="w-full">
-                    Logout
-                  </Link>
-                </DropdownMenuItem>
+              <DropdownMenuContent>
+                {categories.map((category) => (
+                  <DropdownMenuItem key={category.id}>
+                    <Link href={`/category/${category.id}`} className="w-full">
+                      {category.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu> */}
+            <Link href="/contact" className="font-medium hover:text-primary">
+              Contact
+            </Link>
+            <Link href="/faq" className="font-medium hover:text-primary">
+              FAQ
+            </Link>
+          </nav>
+
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="hidden md:flex items-center relative w-1/4">
+            <Input
+              type="text"
+              placeholder="Search products..."
+              className="pr-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <Search className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </form>
+
+          {/* User Actions */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-2">
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button variant="ghost">Login/Register</Button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
+            </div>
             <Link href={`/orders/${userId}`}>
-              <Button variant="ghost" size="icon" className="h-10 w-10">
-                <ClipboardList size={20} className="text-gray-700" />
-
-              </Button>
+              <button className="relative p-2 hover:bg-muted rounded-full">
+                <ShoppingBag className="h-5 w-5" />
+                <span className="sr-only">Wishlist</span>
+              </button>
             </Link>
-
             <Link href="/cart">
-              <Button variant="ghost" size="icon" className="h-10 w-10">
-                <div className="relative">
-                  <ShoppingCart size={20} className="text-gray-700" />
-                  <span
-                    className={`absolute -top-2 -right-2 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center ${cartItems.length > 0 ? "bg-[#A47E2A]" : "hidden"
-                      }`}
-                  >
-                    {cartItems.length}
-                  </span>
-                </div>
-              </Button>
+              <button className="relative p-2 hover:bg-muted rounded-full">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="sr-only">Cart</span>
+              </button>
             </Link>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            <button
+              className="md:hidden p-2 hover:bg-muted rounded-full"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              <Menu size={20} className="text-gray-700" />
-            </Button>
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
         </div>
 
-        {isMobileMenuOpen && (
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
           <div className="md:hidden mt-4 py-4 border-t">
-            <ul className="flex flex-col space-y-4 font-medium text-gray-800">
-              {navItems.map((item) => (
-                <li key={item.name}>
+            <form onSubmit={handleSearch} className="flex items-center relative mb-4">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                className="pr-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </form>
+            <nav className="flex flex-col space-y-4">
+              <Link href="/" className="font-medium hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
+                Home
+              </Link>
+              <Link href="/shop" className="font-medium hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
+                Shop
+              </Link>
+              {/* Commented out categories list
+              <div className="pl-4 space-y-2">
+                {categories.map((category) => (
                   <Link
-                    href={item.href}
-                    className="block hover:text-black transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    key={category.id}
+                    href={`/category/${category.id}`}
+                    className="block text-sm hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
-                    {item.name}
+                    {category.name}
                   </Link>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div> */}
+              <Link href="/contact" className="font-medium hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
+                Contact
+              </Link>
+              <Link href="/faq" className="font-medium hover:text-primary" onClick={() => setMobileMenuOpen(false)}>
+                FAQ
+              </Link>
+            </nav>
           </div>
         )}
       </div>
-    </nav>
-  )
+    </header>
+  );
 }

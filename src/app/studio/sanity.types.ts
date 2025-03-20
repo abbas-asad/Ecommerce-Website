@@ -78,6 +78,7 @@ export type Product = {
   slug: Slug;
   description?: string;
   category?: any
+  categorySlug:string
   //  {
   //   _ref: string;
   //   _type: "reference";
@@ -86,7 +87,7 @@ export type Product = {
   // };
   price: number;
   discountPercentage?: number;
-  rating?: number;
+  rating: number;
   stock?: number;
   tags?: Array<string>;
   brand?: string;

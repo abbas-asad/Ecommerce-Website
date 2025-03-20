@@ -1,5 +1,6 @@
 const siteConfig = {
-    name: "Luxemart", // Website name
+    name: "LuxeMart", // Website name 
+    // well ShopMarket is also a good name
     baseUrl: "https://luxemart.vercel.app", // Website base URL
     locale: "en-PK", // Default language and region
     theme: {
@@ -12,9 +13,9 @@ const siteConfig = {
         phone: "+92-311-2540080", // Contact phone number
     },
     seo: {
-        defaultTitle: "Luxemart - Your Favorite Marketplace",
+        defaultTitle: "LuxeMart - Your Favorite Marketplace",
         defaultDescription: "Shop the best products at unbeatable prices on Market.",
-        keywords: ["ecommerce", "shopping", "Luxemart"],
+        keywords: ["ecommerce", "shopping", "luxemart"],
     },
 };
 

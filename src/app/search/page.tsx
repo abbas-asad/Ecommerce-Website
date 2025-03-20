@@ -1,5 +1,5 @@
 import { client } from "@/sanity/lib/client"
-import ProductCard from "@/app/components/productcard"
+import ProductCard from "@/app/components/search-product-cards"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 

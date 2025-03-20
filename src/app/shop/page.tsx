@@ -1,16 +1,23 @@
-import Heroheader from "../components/layout/heroheader"
+// import Heroheader from "../components/layout/heroheader"
+import AllProductCards from "../components/all-product-cards"
 // import Dropdownmenu from '../components/dropdownmenu'
-import Featuressection from "../components/layout/featuressection"
-import Productcards from "../components/productcards"
+// import WhyChooseUs from "../components/layout/why-choose-us"
+
 
 export default function ShopPage() {
   return (
-    <main>
-      <Heroheader sectionName="Shop" />
-      {/* <Dropdownmenu /> */}
-      <Productcards headingName="Furniture Collection" para="Explore our exquisite range of furniture, crafted to add elegance and functionality to every corner of your home." />
-      <Featuressection />
-    </main>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-8 space-y-12">
+          <AllProductCards
+            title="Shop Now"
+            subtitle="Discover our extensive collection of products."
+            queryCondition='_type == "product"'
+            scrollable={false}
+          />
+        </div>
+      </main>
+    </div>
   )
 }
 

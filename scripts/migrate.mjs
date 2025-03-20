@@ -1,88 +1,154 @@
-// Import required dependencies
-import "dotenv/config";
-import { createClient } from "@sanity/client";
+// migrate.mjs
 
-// Configure Sanity client
+import { createClient } from '@sanity/client';
+import dotenv from 'dotenv';
+import fetch from 'node-fetch'; // If using Node 18+, you might remove this line
+dotenv.config();
+
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+const token = process.env.NEXT_PUBLIC_SANITY_TOKEN;
+const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-06-14';
+
+if (!projectId || !dataset || !token) {
+  console.error('Please ensure your environment variables are set.');
+  process.exit(1);
+}
+
 const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-  token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-01-01",
+  projectId,
+  dataset,
+  token,
+  apiVersion,
   useCdn: false,
 });
 
-// (Optional) Function to create a slug from a title if you need to generate one
-// In this case, our API is already providing a slug.
-function createSlug(title) {
-  return String(title)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+/**
+ * Check if a category with the given title exists.
+ * If not, create it and return its _id.
+ */
+async function getOrCreateCategory(categoryName) {
+  const query = `*[_type == "category" && title == $title][0]{ _id }`;
+  const existingCategory = await client.fetch(query, { title: categoryName });
+  if (existingCategory) {
+    return existingCategory._id;
+  }
+  // Create a new category document
+  const newCategory = await client.create({
+    _type: 'category',
+    title: categoryName,
+    slug: { _type: 'slug', current: categoryName.toLowerCase().replace(/\s+/g, '-') },
+  });
+  return newCategory._id;
 }
 
-// Function to create or get a category using data from the API object
-async function createOrGetCategory(categoryData) {
-  // Destructure the properties from the API object.
-  // For example, categoryData = { slug: "furniture", name: "Furniture", url: "..." }
-  const { name, slug, url } = categoryData;
+/**
+ * Generates a slug (max 96 characters) from the product title.
+ */
+function generateSlug(title) {
+  return title.toLowerCase().replace(/\s+/g, '-').slice(0, 96);
+}
+
+/**
+ * Uploads an image from a URL to Sanity and returns an image object
+ * that can be used in a document.
+ */
+async function uploadImage(imageUrl) {
   try {
-    // First, try to find an existing category with the same title
-    const existingCategory = await client.fetch(
-      `*[_type == "category" && title == $title][0]`,
-      { title: name }
-    );
-
-    if (existingCategory) {
-      console.log(`Found existing category: ${name}`);
-      return existingCategory._id;
+    const res = await fetch(imageUrl);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch image ${imageUrl}: ${res.statusText}`);
     }
-
-    // If not found, create a new category document in Sanity.
-    // Adjust the fields here if your category schema requires additional fields.
-    const newCategory = await client.create({
-      _type: "category",
-      title: name,
-      slug: {
-        _type: "slug",
-        current: slug, // using the API-provided slug
-      },
-      // If your schema has a field for URL, include it.
-      url: url,
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    // Extract a filename from the URL
+    const urlParts = imageUrl.split('/');
+    const filename = urlParts[urlParts.length - 1].split('?')[0];
+    const asset = await client.assets.upload('image', buffer, {
+      filename,
+      contentType: res.headers.get('content-type') || 'image/jpeg',
     });
-
-    console.log(`Created new category: ${name}`);
-    return newCategory._id;
+    return { _type: 'image', asset: { _ref: asset._id } };
   } catch (error) {
-    console.error("Error creating/getting category:", error);
-    throw error;
+    console.error('Error uploading image:', error);
+    return null;
   }
 }
 
-// Main migration function for categories
-async function migrateCategories() {
-  try {
-    // API endpoint that returns an array of category objects
-    const API_URL = "https://dummyjson.com/products/categories";
-    const response = await fetch(API_URL);
-    const data = await response.json();
+/**
+ * Fetches product data from the API, uploads images, and creates product documents in Sanity.
+ */
+async function migrateProducts() {
+  const apiUrl = 'https://dummyjson.com/products/category/womens-dresses';
+  const response = await fetch(apiUrl);
+  if (!response.ok) {
+    console.error('Failed to fetch products:', response.statusText);
+    return;
+  }
+  const data = await response.json();
+  const products = data.products;
+  if (!products || !products.length) {
+    console.error('No products found.');
+    return;
+  }
 
-    // The API returns an array of objects
-    // Example: [{ "slug": "beauty", "name": "Beauty", "url": "https://dummyjson.com/products/category/beauty" }, ...]
-    const categories = data;
+  // Ensure the "womens-dresses" category exists
+  const categoryId = await getOrCreateCategory('womens-dresses');
 
-    console.log(`Found ${categories.length} categories from API.`);
-
-    // Loop over each category object and create or get it in Sanity
-    for (const categoryData of categories) {
-      await createOrGetCategory(categoryData);
+  for (const product of products) {
+    console.log(`Migrating product: ${product.title}`);
+    
+    // Upload the thumbnail and all images
+    const thumbnailAsset = await uploadImage(product.thumbnail);
+    const imageAssets = [];
+    for (const imgUrl of product.images) {
+      const asset = await uploadImage(imgUrl);
+      if (asset) {
+        imageAssets.push(asset);
+      }
     }
 
-    console.log("Category migration completed successfully!");
-  } catch (error) {
-    console.error("Category migration failed:", error);
-    console.error("Error details:", error.message);
+    const doc = {
+      _type: 'product',
+      title: product.title,
+      slug: { _type: 'slug', current: generateSlug(product.title) },
+      description: product.description,
+      category: { _ref: categoryId },
+      price: product.price,
+      discountPercentage: product.discountPercentage,
+      rating: product.rating,
+      stock: product.stock,
+      tags: product.tags,
+      brand: product.brand,
+      sku: product.sku,
+      weight: product.weight,
+      dimensions: product.dimensions,
+      warrantyInformation: product.warrantyInformation,
+      shippingInformation: product.shippingInformation,
+      availabilityStatus: product.availabilityStatus,
+      reviews: product.reviews, // Assumes the reviews structure matches your schema
+      returnPolicy: product.returnPolicy,
+      minimumOrderQuantity: product.minimumOrderQuantity || 1,
+      meta: product.meta,
+      images: imageAssets,
+      thumbnail: thumbnailAsset,
+    };
+
+    try {
+      const created = await client.create(doc);
+      console.log(`Created product with ID: ${created._id}`);
+    } catch (error) {
+      console.error(`Error creating product ${product.title}:`, error);
+    }
   }
 }
 
-// Run the migration
-migrateCategories();
+migrateProducts()
+  .then(() => {
+    console.log('Migration complete.');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Migration error:', error);
+    process.exit(1);
+  });

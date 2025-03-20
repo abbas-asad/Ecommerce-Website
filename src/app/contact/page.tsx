@@ -1,13 +1,13 @@
-import Contactsection from '../components/contactsection'
-import Featuressection from '../components/layout/featuressection'
-import Heroheader from '../components/layout/heroheader'
+import Contactsection from '../components/contact/contact-section'
+// import Heroheader from '../components/layout/heroheader'
+import WhyChooseUs from '../components/layout/why-choose-us'
 
 const Contact = () => {
     return (
         <main>
-            <Heroheader sectionName="Contact" />
+            {/* <Heroheader sectionName="Contact" /> */}
             <Contactsection />
-            <Featuressection />
+            <WhyChooseUs />
         </main>
 
     )

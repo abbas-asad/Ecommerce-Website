@@ -4,15 +4,24 @@ const { hostname } = require('os')
 const nextConfig = {
     images: {
         remotePatterns: [
-            // {
-            //     hostname: "fakestoreapi.com"
-            // },
             {
                 hostname: "cdn.dummyjson.com"
             },
             {
+                hostname: "images.unsplash.com"
+            },
+            {
+                hostname: "source.unsplash.com"
+            },
+            {
                 hostname: "cdn.sanity.io"
-            }
+            },
+            {
+                hostname: "logos-world.net"
+            },
+            {
+                hostname: "upload.wikimedia.org"
+            },
         ]
     }
 }
